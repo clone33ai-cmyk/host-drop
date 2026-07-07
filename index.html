@@ -1,0 +1,1854 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>WannaGo — Interactive Preview</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='8' y1='4' x2='56' y2='62' gradientUnits='userSpaceOnUse'%3E%3Cstop offset='0' stop-color='%23C4623F'/%3E%3Cstop offset='1' stop-color='%23A94F30'/%3E%3C/linearGradient%3E%3C/defs%3E%3Cpath fill-rule='evenodd' fill='url(%23g)' d='M32 4C18.745 4 8 14.745 8 28C8 45 32 62 32 62C32 62 56 45 56 28C56 14.745 45.255 4 32 4ZM22 16h2.2v7.2h1.1V16h2.2v7.2h1.1V16h2.2v9c0 2-1.4 3-2.6 3.2V40c0 1.5-.8 2.2-1.8 2.2c-1 0-1.8-.7-1.8-2.2V28.2c-1.2-.2-2.6-1.2-2.6-3.2ZM38.2 16c2.9 1.3 4.3 5 4.3 9.5c0 2.7-1 4.3-3 5V40c0 1.5-.8 2.2-1.9 2.2c-1.1 0-1.9-.7-1.9-2.2V17.8c0-1.2.8-1.8 2.5-1.8Z'/%3E%3C/svg%3E">
+<script>document.documentElement.classList.add("js")</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,600;0,700;1,600&family=Inter:wght@400;500;700&family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  /* ── Warm & Human palette ── */
+  --bg:#F6F1E8; --bg-raised:#F0E9DC; --surface:#FFFFFF; --surface-2:#EFE7D8;
+  --border:#EADFCE; --border-strong:#DCCDB4;
+  --terracotta:#C4623F; --terracotta-deep:#A94F30; --sage:#8A9A7E; --gold:#E8B34F;
+  --text:#2B2621; --text-2:#6E6255; --muted:#9A8D7C;
+  --success:#5F7F4F; --error:#B23A48; --warning:#A87415; --info:#5B7A8C;
+  --grad:linear-gradient(135deg,#C4623F 0%,#A94F30 100%);
+  --grad-soft:linear-gradient(135deg,rgba(196,98,63,.12),rgba(196,98,63,.06));
+  --sage-soft:rgba(138,154,126,.16);
+  --gold-soft:rgba(232,179,79,.2);
+  --r-input:12px; --r-card:20px; --r-pill:999px;
+  --shadow-card:0 10px 30px rgba(43,38,33,.12);
+  --glow-pink:0 6px 20px rgba(196,98,63,.3);
+  /* legacy aliases (old names still used throughout markup) */
+  --pink:var(--terracotta); --purple:var(--sage); --purple-bright:var(--sage); --champagne:var(--terracotta-deep);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font:400 16px/1.6 'Inter',sans-serif;-webkit-font-smoothing:antialiased;min-height:100vh;overflow-x:clip}
+::selection{background:rgba(196,98,63,.4)}
+a{color:var(--pink);text-decoration:none}
+button{font-family:inherit}
+:focus-visible{outline:2px solid var(--pink);outline-offset:2px}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+
+/* ── type utilities ── */
+.serif{font-family:'Fraunces',Georgia,serif}
+.eyebrow{font:500 12px/1 'Inter',sans-serif;letter-spacing:.14em;text-transform:uppercase;color:var(--pink)}
+.eyebrow.purple{color:var(--purple-bright)}
+h1{font:700 clamp(2.5rem,5vw,4rem)/1.1 'Fraunces',Georgia,serif;letter-spacing:-.01em}
+h2{font:700 2rem/1.2 'Fraunces',Georgia,serif}
+h3{font:600 1.375rem/1.3 'Fraunces',Georgia,serif}
+.sub{color:var(--text-2)}
+.small{font-size:.875rem;color:var(--muted)}
+.mono{font-family:'Courier Prime',monospace}
+.money{color:var(--champagne);font-weight:700}
+.grad-text{background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+
+/* ── layout ── */
+.container{max-width:1120px;margin:0 auto;padding:0 24px}
+.narrow{max-width:520px;margin:0 auto;padding:0 24px}
+main{padding-bottom:96px}
+
+/* ── nav ── */
+nav.top{position:sticky;top:0;z-index:50;background:rgba(246,241,232,.88);backdrop-filter:blur(14px);border-bottom:1px solid var(--border)}
+nav.top .inner{max-width:1120px;margin:0 auto;padding:0 24px;height:68px;display:flex;align-items:center;gap:24px}
+.brand{display:flex;align-items:center;gap:10px;font:700 22px 'Fraunces',Georgia,serif;color:var(--text)}
+.brand .g{background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+nav .spacer{flex:1}
+.nav-link{color:var(--text-2);font-size:15px;font-weight:500;padding:8px 4px}
+.nav-link:hover{color:var(--text)}
+.nav-user{display:flex;align-items:center;gap:10px;color:var(--text-2);font-size:14.5px}
+
+/* ── buttons ── */
+.btn{border:0;cursor:pointer;font:500 15px/1 'Inter',sans-serif;border-radius:var(--r-input);height:44px;padding:0 20px;display:inline-flex;align-items:center;justify-content:center;gap:8px;transition:.18s ease;color:var(--text);text-decoration:none}
+.btn-primary{background:var(--grad);font-weight:700;color:#fff}
+.btn-primary:hover{filter:brightness(1.12);box-shadow:var(--glow-pink);transform:translateY(-1px)}
+.btn-primary:active{transform:translateY(0);filter:brightness(.95)}
+.btn-primary:disabled{background:var(--surface-2);color:var(--muted);box-shadow:none;transform:none;cursor:not-allowed;filter:none}
+.btn-secondary{background:transparent;border:1px solid var(--border-strong)}
+.btn-secondary:hover{border-color:var(--pink);color:var(--pink);background:rgba(196,98,63,.06)}
+.btn-ghost{background:transparent;color:var(--text-2)}
+.btn-ghost:hover{color:var(--text);background:var(--surface)}
+.btn-lg{height:52px;padding:0 28px;font-size:16px;border-radius:14px}
+.btn-sm{height:36px;padding:0 16px;font-size:14px;border-radius:10px}
+.btn-block{width:100%}
+.btn-success{background:rgba(47,191,143,.15);color:var(--success);border:1px solid rgba(47,191,143,.4)}
+.btn-success:hover{background:rgba(47,191,143,.25)}
+.btn-danger{background:transparent;color:var(--error);border:1px solid rgba(255,92,122,.4)}
+.btn-danger:hover{background:rgba(255,92,122,.1)}
+
+/* ── forms ── */
+label.f{display:block;font-size:13.5px;font-weight:500;color:var(--text-2);margin:18px 0 7px}
+.input,textarea.input,select.input{width:100%;height:48px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r-input);color:var(--text);font:400 15px 'Inter',sans-serif;padding:0 16px;outline:0;transition:.18s}
+textarea.input{height:auto;min-height:110px;padding:12px 16px;resize:vertical;line-height:1.55}
+.input::placeholder{color:var(--muted)}
+.input:focus{border-color:var(--pink);box-shadow:0 0 0 3px rgba(196,98,63,.18)}
+.input.err{border-color:var(--error);box-shadow:0 0 0 3px rgba(255,92,122,.15)}
+.err-msg{color:var(--error);font-size:13px;margin-top:6px}
+.hint{font-size:12.5px;color:var(--muted);margin-top:6px}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media(max-width:560px){.grid-2{grid-template-columns:1fr}}
+
+/* ── cards ── */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-card);padding:24px}
+.card.hoverable{transition:.2s ease;cursor:pointer}
+.card.hoverable:hover{border-color:rgba(196,98,63,.45);transform:translateY(-3px);box-shadow:var(--shadow-card)}
+.panel{background:var(--bg-raised);border:1px solid var(--border);border-radius:var(--r-card);padding:32px}
+
+/* ── chips & badges ── */
+.pill{display:inline-flex;align-items:center;height:34px;padding:0 15px;border-radius:var(--r-pill);border:1px solid var(--border-strong);font-size:13.5px;color:var(--text-2);gap:6px;background:transparent;cursor:pointer;transition:.15s}
+.pill:hover{border-color:var(--purple-bright);color:var(--text)}
+.pill.on{background:var(--grad-soft);border-color:var(--pink);color:var(--text)}
+.pill.static{cursor:default}
+.pill.static:hover{border-color:var(--border-strong);color:var(--text-2)}
+.chips{display:flex;flex-wrap:wrap;gap:9px}
+.badge{font:700 11px/1 'Inter',sans-serif;letter-spacing:.08em;text-transform:uppercase;padding:5px 10px;border-radius:var(--r-pill);display:inline-block}
+.b-success{background:rgba(47,191,143,.15);color:var(--success)}
+.b-warning{background:rgba(245,166,35,.15);color:var(--warning)}
+.b-error{background:rgba(255,92,122,.15);color:var(--error)}
+.b-info{background:rgba(76,201,240,.15);color:var(--info)}
+.b-pink{background:rgba(196,98,63,.15);color:var(--pink)}
+.b-purple{background:rgba(138,154,126,.15);color:var(--purple-bright)}
+
+/* ── avatars ── */
+.avatar{border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Fraunces',Georgia,serif;font-weight:700;color:#fff;flex-shrink:0;position:relative;overflow:hidden}
+.avatar.ring{box-shadow:0 0 0 2px var(--bg),0 0 0 4px var(--pink)}
+.avatar.ring-p{box-shadow:0 0 0 2px var(--bg),0 0 0 4px var(--purple-bright)}
+
+/* ── choose-role cards ── */
+.role-cards{display:grid;grid-template-columns:1fr 1fr;gap:20px;max-width:820px;margin:0 auto;text-align:left}
+.role-card{border-radius:var(--r-card);padding:32px;border:1px solid var(--border);background:var(--surface);position:relative;overflow:hidden;transition:.2s}
+.role-card:hover{transform:translateY(-3px);box-shadow:var(--shadow-card)}
+.role-card.her{border-top:3px solid var(--pink)}
+.role-card.him{border-top:3px solid var(--purple-bright)}
+.role-card h3{margin:14px 0 8px}
+.role-card p{color:var(--text-2);font-size:15px;margin-bottom:22px}
+
+/* ── landing: one date, told in real time ── */
+.ns-hero{min-height:92vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;position:relative;overflow:hidden;padding:48px 24px}
+.ns-hero::before{content:"";position:absolute;top:-30%;left:50%;transform:translateX(-50%);width:1100px;height:800px;background:radial-gradient(closest-side,rgba(138,154,126,.22),transparent 65%);pointer-events:none}
+.ns-hero::after{content:"";position:absolute;bottom:-40%;left:18%;width:700px;height:700px;background:radial-gradient(closest-side,rgba(196,98,63,.13),transparent 65%);pointer-events:none}
+.bokeh{position:absolute;inset:0;pointer-events:none;opacity:.7}
+.bokeh i{position:absolute;border-radius:50%;background:radial-gradient(circle,rgba(196,98,63,.5),transparent 70%);animation:bob 9s ease-in-out infinite}
+.bokeh i:nth-child(2n){background:radial-gradient(circle,rgba(138,154,126,.45),transparent 70%)}
+.bokeh i:nth-child(3n){background:radial-gradient(circle,rgba(233,196,106,.35),transparent 70%)}
+@keyframes bob{0%,100%{transform:translateY(0) scale(1)}50%{transform:translateY(-26px) scale(1.08)}}
+.ns-kicker{font:500 13px 'Courier Prime',monospace;letter-spacing:.22em;text-transform:uppercase;color:var(--text-2);position:relative}
+.ns-hero h1{font-size:clamp(3.2rem,8.4vw,6.6rem);line-height:1.02;margin:26px 0 12px;position:relative}
+.ns-hero h1 em{font-style:italic;background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+.ns-hero .sub{font-size:clamp(1.05rem,1.6vw,1.25rem);max-width:520px;margin:0 auto 38px;position:relative}
+.ns-hero .btn{position:relative}
+.scroll-cue{position:absolute;bottom:30px;left:50%;transform:translateX(-50%);font:500 12px 'Courier Prime',monospace;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);display:flex;flex-direction:column;align-items:center;gap:8px}
+.scroll-cue::after{content:"";width:1px;height:34px;background:linear-gradient(var(--pink),transparent)}
+
+.night{position:relative;max-width:980px;margin:0 auto;padding:40px 24px 20px}
+.night::before{content:"";position:absolute;top:0;bottom:0;left:50%;width:2px;transform:translateX(-50%);background:linear-gradient(180deg,transparent,rgba(196,98,63,.45) 8%,rgba(138,154,126,.45) 92%,transparent)}
+.beat{display:grid;grid-template-columns:1fr 72px 1fr;align-items:center;margin:0 0 96px}
+.beat .dot{grid-column:2;justify-self:center;width:14px;height:14px;border-radius:50%;background:var(--grad);box-shadow:0 0 0 5px var(--bg),0 0 22px rgba(196,98,63,.55)}
+.beat .when{text-align:right;padding-right:8px}
+.beat.flip .when{grid-column:3;text-align:left;grid-row:1;padding:0 0 0 8px}
+.beat.flip .what{grid-column:1;grid-row:1;justify-self:end}
+.beat .when .day{font:500 12px 'Courier Prime',monospace;letter-spacing:.2em;text-transform:uppercase;color:var(--muted)}
+.beat .when .clock{font:700 clamp(2rem,4.4vw,3.1rem)/1.1 'Fraunces',Georgia,serif;margin:6px 0 10px}
+.beat .when p{color:var(--text-2);font-size:16px;max-width:300px;display:inline-block}
+.beat .what{max-width:400px;width:100%}
+@media(max-width:820px){
+  .night::before{left:20px}
+  .beat,.beat.flip{grid-template-columns:44px 1fr;margin-bottom:72px}
+  .beat .dot{grid-column:1;grid-row:1;align-self:start;margin-top:8px}
+  .beat .when,.beat.flip .when{grid-column:2;grid-row:1;text-align:left;padding:0}
+  .beat .what,.beat.flip .what{grid-column:2;grid-row:2;margin-top:18px;justify-self:start}
+  .beat .when p{max-width:none}
+}
+.artifact-note{display:flex;gap:8px;align-items:flex-start;font-size:12.5px;color:var(--muted);margin-top:12px;line-height:1.5}
+.artifact-note svg{margin-top:1px}
+.receipt{background:var(--surface);border:1px solid var(--border-strong);border-radius:16px;padding:20px 22px;font-family:'Courier Prime',monospace}
+.receipt .rrow{display:flex;justify-content:space-between;font-size:13.5px;color:var(--text-2);padding:7px 0}
+.receipt .rrow.total{border-top:1px dashed rgba(43,38,33,.22);margin-top:6px;padding-top:12px;color:var(--text);font-weight:500}
+.receipt .rrow .money{font-weight:500}
+.rstatus{display:inline-flex;align-items:center;gap:7px;font:500 11px 'Courier Prime',monospace;letter-spacing:.14em;text-transform:uppercase;color:var(--warning);margin-top:12px}
+.rstatus .pulse{width:8px;height:8px;border-radius:50%;background:var(--warning);animation:pulse 1.6s ease infinite}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(245,166,35,.5)}50%{box-shadow:0 0 0 6px rgba(245,166,35,0)}}
+.yes-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-card);padding:22px}
+.yes-card .row{display:flex;gap:14px;align-items:center;margin-bottom:16px}
+.yes-card .row b{display:block}
+.yes-card .row .small{display:block}
+.yes-glow{box-shadow:0 6px 22px rgba(232,179,79,.5)}
+.colophon{text-align:center;font:500 13px 'Courier Prime',monospace;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);padding:24px 24px 88px}
+.colophon b{color:var(--text-2)}
+.story{max-width:780px;margin:0 auto;padding:96px 24px;text-align:center;border-top:1px solid var(--border)}
+.story .q{font:600 italic clamp(1.5rem,3.4vw,2.3rem)/1.4 'Fraunces',Georgia,serif}
+.story .q .hl{background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+.story .by{display:flex;justify-content:center;align-items:center;gap:12px;margin-top:28px;color:var(--text-2);font-size:14.5px}
+.finale{text-align:center;padding:120px 24px 130px;position:relative;overflow:hidden}
+.finale::before{content:"";position:absolute;bottom:-55%;left:50%;transform:translateX(-50%);width:900px;height:620px;background:radial-gradient(closest-side,rgba(196,98,63,.2),transparent 70%);pointer-events:none}
+.finale h2{font-size:clamp(2.4rem,5.6vw,4.2rem);position:relative}
+.finale h2 em{font-style:italic;background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+.finale p{color:var(--text-2);margin:16px auto 36px;max-width:400px;position:relative}
+.finale .btn{position:relative}
+footer.lp-foot{border-top:1px solid var(--border);background:var(--bg-raised)}
+footer.lp-foot .base{max-width:1120px;margin:0 auto;padding:26px 24px;display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap;color:var(--muted);font-size:13.5px}
+footer.lp-foot .base nav{display:flex;gap:22px;flex-wrap:wrap}
+footer.lp-foot .base a{color:var(--muted)}
+footer.lp-foot .base a:hover{color:var(--text)}
+html.js .reveal{opacity:0;transform:translateY(26px);transition:opacity .7s ease,transform .7s ease}
+html.js .reveal.in{opacity:1;transform:none}
+@media (prefers-reduced-motion:reduce){html.js .reveal{opacity:1;transform:none}}
+
+/* ── feed ── */
+.feed{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,320px),1fr));gap:20px;margin-top:28px}
+.date-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-card);overflow:hidden;transition:.2s;display:flex;flex-direction:column}
+.date-card:hover{border-color:rgba(196,98,63,.45);transform:translateY(-3px);box-shadow:var(--shadow-card)}
+.date-card .photo{height:210px;position:relative;display:flex;align-items:flex-end}
+.date-card .photo .scrim{position:absolute;inset:0;background:linear-gradient(180deg,transparent 40%,rgba(32,25,18,.85))}
+.date-card .photo .who{position:relative;padding:16px 20px;z-index:1}
+.date-card .photo .who .name{font:700 1.25rem 'Fraunces',Georgia,serif}
+.date-card .bd{padding:20px;flex:1;display:flex;flex-direction:column;gap:10px}
+.date-card .venue{display:flex;gap:8px;align-items:center;color:var(--text);font-weight:500;font-size:15px}
+.date-card .idea{color:var(--text-2);font-size:14.5px;flex:1}
+.date-card .foot{display:flex;justify-content:space-between;align-items:center;padding-top:14px;border-top:1px solid var(--border)}
+.profile-head{display:flex;gap:20px;align-items:center;padding:28px 0 24px}
+.profile-head .meta{flex:1}
+.icon{width:20px;height:20px;stroke:currentColor;stroke-width:1.75;fill:none;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0}
+.icon.sm{width:16px;height:16px}
+.icon.lg{width:28px;height:28px;stroke-width:1.5}
+
+/* ── autocomplete ── */
+.ac-wrap{position:relative}
+.ac-list{position:absolute;top:calc(100% + 6px);left:0;right:0;background:var(--surface-2);border:1px solid var(--border-strong);border-radius:var(--r-input);overflow:hidden;z-index:30;box-shadow:var(--shadow-card)}
+.ac-item{padding:12px 16px;cursor:pointer;display:flex;gap:10px;align-items:center;font-size:14.5px}
+.ac-item:hover{background:rgba(196,98,63,.1)}
+.ac-item .addr{color:var(--muted);font-size:12.5px;display:block}
+.ac-item .prov{margin-left:auto;font:500 10.5px 'Courier Prime';letter-spacing:.06em;color:var(--info);text-transform:uppercase}
+
+/* ── fund page ── */
+.duo{display:grid;grid-template-columns:1fr 1fr;gap:24px;align-items:start}
+@media(max-width:820px){.duo{grid-template-columns:1fr}}
+.profile-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-card);overflow:hidden}
+.profile-card .hero-photo{height:260px;position:relative;display:flex;align-items:flex-end}
+.profile-card .hero-photo .scrim{position:absolute;inset:0;background:linear-gradient(180deg,transparent 35%,rgba(32,25,18,.88))}
+.profile-card .hero-photo .who{position:relative;padding:20px 24px;z-index:1}
+.profile-card .bd{padding:22px 24px}
+.profile-card.her-side{border-top:3px solid var(--pink)}
+.profile-card.him-side{border-top:3px solid var(--purple-bright)}
+.vs{display:flex;align-items:center;justify-content:center}
+.kv{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:6px}
+.kv dt{font:500 11px 'Courier Prime',monospace;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:4px}
+.kv dd{font-size:15px}
+
+/* ── ticket ── */
+.ticket{background:var(--surface);border:1px solid var(--border-strong);border-radius:var(--r-card);overflow:hidden;position:relative;max-width:460px;margin:0 auto}
+.ticket .stub{background:var(--gold);padding:20px 26px;display:flex;justify-content:space-between;align-items:center}
+.ticket .stub .t{font:700 1.3rem 'Fraunces',Georgia,serif;color:#2B2621}
+.ticket .stub .d{font:500 11px/1 'Courier Prime',monospace;letter-spacing:.1em;color:rgba(43,38,33,.65)}
+.ticket .tbody{padding:26px;position:relative}
+.ticket .tbody::before{content:"";position:absolute;top:-1px;left:14px;right:14px;border-top:2px dashed rgba(43,38,33,.25)}
+.ticket .notch{position:absolute;width:24px;height:24px;background:var(--bg);border:1px solid var(--border-strong);border-radius:50%;top:59px}
+.ticket .notch.l{left:-13px}.ticket .notch.r{right:-13px}
+.ticket dl{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.ticket dt{font:500 11px/1 'Courier Prime',monospace;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:5px}
+.ticket dd{font-size:15px}
+
+/* ── admin & tables ── */
+table.data{width:100%;border-collapse:collapse;font-size:14px}
+table.data th{text-align:left;font:500 11px 'Courier Prime',monospace;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);padding:10px 14px;border-bottom:1px solid var(--border-strong)}
+table.data td{padding:12px 14px;border-bottom:1px solid var(--border);color:var(--text-2);vertical-align:middle}
+table.data td:first-child{color:var(--text)}
+.stat-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:16px;margin:24px 0 32px}
+.stat{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-card);padding:20px 22px}
+.stat .v{font:700 2rem 'Fraunces',Georgia,serif}
+.stat .l{font-size:13px;color:var(--muted);margin-top:2px}
+.tabs{display:flex;gap:8px;border-bottom:1px solid var(--border);margin-bottom:20px}
+.tab{background:none;border:0;color:var(--muted);font:500 15px 'Inter';padding:12px 16px;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px}
+.tab.on{color:var(--text);border-bottom-color:var(--pink)}
+
+/* ── misc ── */
+.upload{border:1.5px dashed var(--border-strong);border-radius:var(--r-card);padding:26px;display:flex;gap:16px;align-items:center;cursor:pointer;transition:.18s;background:var(--surface)}
+.upload:hover{border-color:var(--pink)}
+.upload .ph{width:64px;height:64px;border-radius:14px;background:var(--surface-2);display:flex;align-items:center;justify-content:center;color:var(--muted)}
+.toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%);background:var(--surface-2);border:1px solid var(--border-strong);border-radius:var(--r-pill);padding:12px 22px;font-size:14.5px;box-shadow:var(--shadow-card);z-index:99;display:flex;gap:9px;align-items:center;animation:pop .25s ease}
+@keyframes pop{from{opacity:0;transform:translate(-50%,10px)}to{opacity:1;transform:translate(-50%,0)}}
+.page-head{padding:44px 0 8px}
+.empty{border:1.5px dashed var(--border-strong);border-radius:var(--r-card);padding:44px;text-align:center;color:var(--muted)}
+.empty h3{color:var(--text-2);margin-bottom:6px}
+.match-burst{text-align:center;padding:56px 0 40px;position:relative}
+.match-burst::before{content:"";position:absolute;top:-60px;left:50%;transform:translateX(-50%);width:680px;height:420px;background:radial-gradient(closest-side,rgba(232,179,79,.3),transparent);pointer-events:none}
+.match-avatars{display:flex;justify-content:center;align-items:center;margin-bottom:26px}
+.match-avatars .avatar{border:4px solid var(--bg)}
+.match-avatars .avatar:last-child{margin-left:-26px}
+.match-heart{width:52px;height:52px;border-radius:50%;background:var(--gold);color:#2B2621;display:flex;align-items:center;justify-content:center;margin:-30px auto 0;position:relative;z-index:2;box-shadow:var(--glow-pink)}
+.notice{display:flex;gap:12px;background:var(--grad-soft);border:1px solid rgba(196,98,63,.25);border-radius:var(--r-input);padding:14px 18px;font-size:14.5px;color:var(--text-2);align-items:flex-start}
+.demo-bar{background:linear-gradient(90deg,rgba(196,98,63,.12),rgba(138,154,126,.12));border-bottom:1px solid var(--border);font-size:13px;color:var(--text-2);text-align:center;padding:7px 16px}
+.demo-bar b{color:var(--text)}
+
+/* ── preview hub & bar (static package chrome) ── */
+.preview-bar{background:linear-gradient(90deg,rgba(196,98,63,.12),rgba(138,154,126,.12));border-bottom:1px solid var(--border);font-size:13px;color:var(--text-2);padding:8px 16px;display:flex;justify-content:center;align-items:center;gap:14px;flex-wrap:wrap}
+.preview-bar b{color:var(--text)}
+.preview-bar button{background:none;border:1px solid var(--border-strong);border-radius:var(--r-pill);color:var(--text-2);font:500 12px 'Inter';padding:4px 12px;cursor:pointer}
+.preview-bar button:hover{border-color:var(--pink);color:var(--pink)}
+.hub-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,280px),1fr));gap:18px;margin-top:32px}
+.hub-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-card);padding:24px;display:block;color:var(--text);transition:.2s}
+.hub-card:hover{border-color:rgba(196,98,63,.45);transform:translateY(-3px);box-shadow:var(--shadow-card)}
+.hub-card h3{margin:8px 0 6px}
+.hub-card p{font-size:14px;color:var(--text-2)}
+.hub-card .go{display:inline-flex;align-items:center;gap:6px;margin-top:14px;font-size:13.5px;font-weight:500;color:var(--pink)}
+.hub-note{display:flex;gap:12px;background:var(--grad-soft);border:1px solid rgba(196,98,63,.25);border-radius:var(--r-card);padding:18px 22px;font-size:14.5px;color:var(--text-2);margin:28px 0 8px;align-items:flex-start}
+.hub-note b{color:var(--text)}
+.hub-stats{display:flex;gap:26px;flex-wrap:wrap;margin-top:22px}
+.hub-stats .s b{font:700 1.4rem 'Fraunces',Georgia,serif;display:block}
+.hub-stats .s span{font-size:12.5px;color:var(--muted)}
+
+.vtick{display:inline-flex;align-items:center;justify-content:center;width:16px;height:16px;border-radius:50%;background:var(--grad);color:#fff;font:700 10px/1 'Inter';vertical-align:2px;margin-left:6px}
+/* ── edit profile ── */
+.photo-mgr{display:grid;grid-template-columns:repeat(auto-fill,minmax(92px,1fr));gap:12px;margin-top:4px}
+.photo-mgr .ph{aspect-ratio:1;border-radius:14px;position:relative;overflow:hidden;border:1px solid var(--border)}
+.photo-mgr .ph .lead{position:absolute;left:6px;bottom:6px;font:700 9px 'Inter';letter-spacing:.08em;background:rgba(32,25,18,.7);padding:3px 7px;border-radius:999px;text-transform:uppercase}
+.photo-mgr .ph button{position:absolute;top:6px;right:6px;width:22px;height:22px;border-radius:50%;border:0;background:rgba(32,25,18,.75);color:var(--text);font-size:12px;cursor:pointer}
+.photo-mgr .ph button:hover{background:var(--error)}
+.photo-mgr .add{aspect-ratio:1;border-radius:14px;border:1.5px dashed var(--border-strong);background:none;color:var(--muted);font:500 13px 'Inter';cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px}
+.photo-mgr .add:hover{border-color:var(--pink);color:var(--pink)}
+
+/* ── mobile hardening ── */
+.table-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
+.table-wrap table.data{min-width:620px}
+@media(max-width:640px){
+  nav.top .inner{padding:0 14px;gap:12px;height:60px}
+  .brand{font-size:19px}
+  .brand svg{width:26px;height:26px}
+  .nav-user .uname{display:none}
+  .btn .lbl-hide-sm{display:none}
+  .nav-link{font-size:14px}
+  .container,.narrow{padding-left:18px;padding-right:18px}
+  .profile-head{gap:14px}
+  .profile-head .avatar{width:72px!important;height:72px!important;font-size:26px!important}
+  .page-head{padding-top:28px}
+  .panel{padding:22px 18px}
+  .card{padding:20px}
+  .ticket .tbody{padding:22px 18px}
+  .lp-foot .base{justify-content:center;text-align:center}
+}
+@media(max-width:400px){
+  .btn-lg{padding:0 20px;font-size:15px}
+  .ns-hero h1{font-size:2.9rem}
+}
+
+/* ── warm & human additions ── */
+.b-gold{background:var(--gold-soft);color:#8A6110}
+.beat.gold .dot{background:var(--gold);box-shadow:0 0 0 5px var(--bg),0 0 20px rgba(232,179,79,.6)}
+.pill{border-color:rgba(138,154,126,.5)}
+.pill:hover{border-color:var(--sage);color:var(--text);background:var(--sage-soft)}
+.pill.on{background:var(--sage-soft);border-color:var(--sage);color:var(--text)}
+.grad-text{background:none;-webkit-background-clip:initial;background-clip:initial;-webkit-text-fill-color:currentColor;color:var(--terracotta)}
+.ns-hero h1 em,.finale h2 em,.story .q .hl{background:none;-webkit-background-clip:initial;-webkit-text-fill-color:currentColor;color:var(--terracotta)}
+.brand .g{background:none;-webkit-background-clip:initial;-webkit-text-fill-color:currentColor;color:var(--terracotta)}
+
+.preview-bar select{background:var(--surface);border:1px solid var(--border-strong);border-radius:var(--r-pill);color:var(--text-2);font:500 12px 'Inter';padding:4px 10px;cursor:pointer}
+.preview-bar select:hover{border-color:var(--pink)}
+
+
+.photo{height:210px;position:relative;overflow:hidden;display:flex;align-items:flex-end}
+.photo .scrim{position:absolute;inset:0;background:linear-gradient(180deg,transparent 40%,rgba(32,25,18,.85))}
+.photo .who{position:relative;padding:16px 20px;z-index:1}
+.photo .who .name{font:700 1.25rem 'Fraunces',Georgia,serif}
+.profile-card .photo{height:260px}
+.profile-card .photo .who{padding:20px 24px}
+.avatar img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:50%}
+.photo img.ph-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 22%}
+.face-stack{display:inline-flex;vertical-align:middle;margin-right:12px}
+.face-stack .avatar{border:2px solid var(--bg)}
+.face-stack .avatar+.avatar{margin-left:-10px}
+.ns-hero .hero-bg{position:absolute;inset:0;pointer-events:none}
+.ns-hero .hero-bg img{width:100%;height:100%;object-fit:cover;opacity:.5;filter:saturate(.85)}
+.ns-hero .hero-bg::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(32,25,18,.78) 0%,rgba(32,25,18,.62) 60%,var(--bg) 100%)}
+.ns-hero.has-photo .ns-kicker{color:rgba(255,255,255,.82)}
+.ns-hero.has-photo h1{color:#fff}
+.ns-hero.has-photo .sub{color:rgba(255,255,255,.9)}
+.ns-hero.has-photo .scroll-cue{color:rgba(255,255,255,.65)}
+.ns-hero.has-photo .ns-kicker,.ns-hero.has-photo h1,.ns-hero.has-photo .sub,.ns-hero.has-photo .scroll-cue{position:relative;z-index:2}
+.venue-strip{max-width:1080px;margin:64px auto 8px;padding:0 24px}
+.venue-strip .vs-head{text-align:center;margin-bottom:28px}
+.venue-strip h2{font-family:'Fraunces',Georgia,serif;font-size:clamp(1.7rem,3.4vw,2.5rem);margin-top:14px}
+.venue-strip h2 em{font-style:italic;background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+.vs-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+.vs-card{margin:0;border-radius:18px;overflow:hidden;position:relative;aspect-ratio:3/4;border:1px solid var(--border);background:var(--surface)}
+.vs-card img{width:100%;height:100%;object-fit:cover;transition:transform .5s ease}
+.vs-card:hover img{transform:scale(1.05)}
+.vs-card figcaption{position:absolute;left:0;right:0;bottom:0;padding:36px 16px 14px;background:linear-gradient(180deg,transparent,rgba(32,25,18,.9));display:flex;flex-direction:column;gap:2px}
+.vs-card figcaption b{font-family:'Fraunces',Georgia,serif;font-size:1.05rem;color:#fff}
+.vs-card figcaption span{font-size:12px;color:rgba(255,255,255,.72)}
+@media(max-width:760px){.vs-grid{grid-template-columns:repeat(2,1fr)}}
+.venue-banner{position:relative;border-radius:14px;overflow:hidden;border:1px solid var(--border);margin-bottom:16px}
+.venue-banner img{width:100%;height:100%;object-fit:cover;display:block}
+.venue-banner .vb-tag{position:absolute;left:10px;bottom:10px;display:inline-flex;align-items:center;gap:6px;background:rgba(32,25,18,.78);color:#fff;font:600 12px 'Inter';padding:6px 11px;border-radius:999px;backdrop-filter:blur(4px)}
+.venue-thumb{width:42px;height:42px;border-radius:10px;object-fit:cover;flex-shrink:0;border:1px solid var(--border)}
+.win-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-top:10px}
+.win-grid .dh{font:700 10px 'Courier Prime',monospace;letter-spacing:.08em;color:var(--muted);text-align:center;text-transform:uppercase;padding-bottom:2px}
+.win-grid .d{font:500 13px 'Inter';color:var(--text-2);text-align:center;padding:9px 0;border-radius:10px;cursor:pointer;border:1px solid transparent;user-select:none}
+.win-grid .d:hover{border-color:var(--border-strong)}
+.win-grid .d.sel{background:var(--terracotta);color:#fff;font-weight:700}
+.win-row{display:flex;justify-content:space-between;align-items:center;gap:10px;background:var(--bg);border:1px solid var(--terracotta);border-radius:12px;padding:10px 12px;margin-top:8px}
+.win-sel{background:var(--surface);color:var(--text);border:1px solid var(--border-strong);border-radius:10px;padding:7px 10px;font:500 12.5px 'Inter',sans-serif;cursor:pointer}
+.win-pick{display:flex;gap:10px;align-items:center;background:var(--bg);border:1px solid var(--border-strong);border-radius:12px;padding:11px 12px;margin-top:8px;cursor:pointer;user-select:none;transition:border-color .15s}
+.win-pick:hover{border-color:var(--muted)}
+.win-pick .box{width:18px;height:18px;border-radius:6px;border:1.5px solid var(--muted);flex-shrink:0;display:flex;align-items:center;justify-content:center;font:700 12px 'Inter';color:#fff;background:transparent}
+.win-pick.on{border-color:var(--purple-bright)}
+.win-pick.on .box{background:var(--purple-bright);border-color:var(--purple-bright)}
+.win-pick.pick-r .box{border-radius:50%}
+.win-pick.pick-r.on{border-color:var(--terracotta)}
+.win-pick.pick-r.on .box{background:transparent;border:5px solid var(--terracotta)}
+.cal-nav{display:flex;align-items:center;justify-content:space-between;margin-top:10px;padding:0 2px}
+.cal-title{font:600 14px 'Inter',sans-serif;color:var(--text)}
+.cal-btn{width:32px;height:32px;border-radius:10px;border:1px solid var(--border-strong);background:var(--surface);color:var(--text);font-size:17px;cursor:pointer;line-height:1}
+.cal-btn:hover:not(:disabled){border-color:var(--muted)}
+.cal-btn:disabled{opacity:.35;cursor:default}
+.win-grid{margin-top:8px}
+.win-grid .d.off{opacity:.3;cursor:default}
+.win-grid .d.off:hover{border-color:transparent}
+.vtag{display:inline-flex;align-items:center;font:600 10.5px 'Inter',sans-serif;letter-spacing:.02em;background:var(--gold-soft);color:#7A5A10;border:1px solid rgba(232,179,79,.5);padding:3px 9px;border-radius:999px;white-space:nowrap}
+.vtags-row{display:flex;gap:6px;flex-wrap:wrap}
+.vpills{display:flex;gap:6px;flex-wrap:wrap;margin:10px 0 4px}
+.vpill{display:inline-flex;align-items:center;gap:4px;font:600 10.5px 'Inter',sans-serif;background:var(--sage-soft);color:#465545;border:1px solid rgba(138,154,126,.55);padding:3px 9px;border-radius:999px;white-space:nowrap}
+.vpill.gold{background:var(--gold-soft);color:#7A5A10;border-color:rgba(232,179,79,.55)}
+.trend-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:10px}
+.trend-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;overflow:hidden;cursor:pointer;transition:border-color .15s,transform .15s}
+.trend-card:hover{border-color:var(--terracotta);transform:translateY(-2px)}
+.tc-img{height:92px;position:relative;overflow:hidden;background:var(--bg-raised)}
+.tc-img img{width:100%;height:100%;object-fit:cover}
+.tc-tags{position:absolute;left:6px;bottom:6px;display:flex;gap:4px}
+.tc-bd{padding:8px 10px 10px;display:flex;flex-direction:column;gap:1px}
+.tc-bd b{font-size:13px;line-height:1.3}
+.wish-btn{position:absolute;top:6px;right:6px;width:34px;height:34px;border-radius:50%;border:1.5px solid rgba(255,255,255,.7);background:rgba(32,25,18,.45);display:flex;align-items:center;justify-content:center;cursor:pointer;color:#fff;backdrop-filter:blur(3px)}
+.wish-btn.on{background:var(--pink);border-color:var(--pink)}
+.vtag.mine{background:rgba(212,83,126,.14);color:#993556;border-color:rgba(212,83,126,.4)}
+.legal-overlay{position:fixed;inset:0;background:rgba(32,25,18,.55);z-index:200;display:flex;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(3px)}
+.legal-card{background:var(--surface);border:1px solid var(--border-strong);border-radius:20px;max-width:720px;width:100%;max-height:84vh;display:flex;flex-direction:column;overflow:hidden}
+.legal-head{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:14px 18px;border-bottom:1px solid var(--border);flex-wrap:wrap}
+.legal-tabs{display:flex;gap:6px;flex-wrap:wrap}
+.legal-body{padding:20px 24px;overflow-y:auto;font-size:14px;line-height:1.65;color:var(--text-2)}
+.legal-body h4{font:600 15px 'Inter',sans-serif;color:var(--text);margin:18px 0 6px}
+.legal-body h4:first-of-type{margin-top:6px}
+.legal-body p{margin:0 0 10px}
+.legal-draft{background:var(--gold-soft);color:#7A5A10;border:1px solid rgba(232,179,79,.5);border-radius:10px;padding:8px 12px;font:600 12px 'Inter',sans-serif;margin-bottom:14px}
+.agree{display:flex;gap:10px;align-items:flex-start;margin-top:20px;font-size:13.5px;color:var(--text-2);cursor:pointer;line-height:1.55}
+.agree input{margin-top:3px;width:16px;height:16px;accent-color:var(--terracotta);flex-shrink:0}
+.agree a{color:var(--terracotta);text-decoration:underline;cursor:pointer}
+.lp-foot nav a{cursor:pointer}
+.wl-row{display:flex;gap:10px;align-items:center;background:var(--bg);border:1px solid var(--border);border-radius:12px;padding:9px 10px}
+.wl-row + .wl-row{margin-top:8px}
+.mini-heart{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.mini-heart.on{background:var(--pink);color:#fff}
+.mini-heart.off{border:1.5px solid var(--border-strong);color:var(--muted)}
+.trend-row{display:flex;gap:14px;align-items:center;background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:12px 14px;margin-top:10px}
+.tr-rank{font:700 18px 'Fraunces',Georgia,serif;color:var(--muted);width:38px;flex-shrink:0}
+.tr-rank.top{color:var(--terracotta)}
+.tr-img{width:56px;height:56px;border-radius:12px;object-fit:cover;flex-shrink:0}
+.tc-tags{flex-wrap:wrap;max-width:calc(100% - 12px)}
+.vtag.onimg, .tc-tags .vtag, .vs-card figcaption .vtag{background:rgba(32,25,18,.72);color:#fff;border-color:rgba(255,255,255,.28);backdrop-filter:blur(4px)}
+.up-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(88px,1fr));gap:8px;margin-top:10px}
+.up-th{position:relative;aspect-ratio:1;border-radius:12px;overflow:hidden;border:1px solid var(--border-strong);background:var(--bg)}
+.up-th.main{outline:2px solid var(--terracotta);outline-offset:1px}
+.up-th img{width:100%;height:100%;object-fit:cover;display:block}
+.up-th button{position:absolute;top:5px;right:5px;width:22px;height:22px;border-radius:50%;border:none;background:rgba(32,25,18,.75);color:#fff;font:700 11px 'Inter',sans-serif;cursor:pointer;line-height:1}
+.up-th button.mk{right:auto;left:5px}
+.lead-tag{position:absolute;left:5px;bottom:5px;background:var(--terracotta);color:#fff;font:600 10px 'Inter',sans-serif;padding:2px 7px;border-radius:999px}
+.up-add{aspect-ratio:1;border-radius:12px;border:1.5px dashed var(--border-strong);background:var(--bg);color:var(--muted);font:300 28px 'Inter',sans-serif;cursor:pointer}
+.up-add:hover{border-color:var(--terracotta);color:var(--terracotta)}
+.pf-thumbs{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
+.pf-th{width:54px;height:54px;border-radius:10px;object-fit:cover;cursor:pointer;border:2px solid transparent}
+.pf-th.on{border-color:var(--terracotta)}
+.vtag.partner{background:var(--sage-soft);color:#465545;border-color:rgba(138,154,126,.55)}
+.checkin{border-top:1px dashed var(--border-strong);margin-top:18px;padding-top:14px;text-align:left}
+.ci-row{display:flex;justify-content:space-between;align-items:center;padding:7px 0;font-weight:500;font-size:14px}
+.ci-done{display:flex;gap:8px;align-items:flex-start;background:var(--sage-soft);border:1px solid rgba(138,154,126,.5);border-radius:12px;padding:11px 12px;margin-top:8px;font-size:13px;color:#465545;font-weight:500}
+.money-how{max-width:1080px;margin:56px auto 0;padding:0 24px}
+.mh-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:26px}
+.mh-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:20px;display:flex;flex-direction:column;gap:8px;align-items:flex-start}
+.mh-card b{font-size:15.5px}
+.mh-card p{font-size:13.5px;color:var(--text-2);line-height:1.55}
+@media(max-width:760px){.mh-grid{grid-template-columns:1fr}}
+
+</style>
+</head>
+<body data-page="landing">
+<div class="preview-bar" id="static-note">You're seeing a static preview. For the full clickable version, open this file in a browser — from iMessage: tap the file, tap the share icon, choose "Open in Safari" (or save to Files and open from there).</div>
+<nav class="top"><div class="inner" id="nav">
+    <a class="brand" href="landing.html"><svg width="34" height="34" viewBox="0 0 64 64"><defs><linearGradient id="ng" x1="8" y1="4" x2="56" y2="62" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#C4623F"></stop><stop offset="1" stop-color="#A94F30"></stop></linearGradient></defs><path fill-rule="evenodd" fill="url(#ng)" d="M32 4C18.745 4 8 14.745 8 28C8 45 32 62 32 62C32 62 56 45 56 28C56 14.745 45.255 4 32 4ZM22 16h2.2v7.2h1.1V16h2.2v7.2h1.1V16h2.2v9c0 2-1.4 3-2.6 3.2V40c0 1.5-.8 2.2-1.8 2.2c-1 0-1.8-.7-1.8-2.2V28.2c-1.2-.2-2.6-1.2-2.6-3.2ZM38.2 16c2.9 1.3 4.3 5 4.3 9.5c0 2.7-1 4.3-3 5V40c0 1.5-.8 2.2-1.9 2.2c-1.1 0-1.9-.7-1.9-2.2V17.8c0-1.2.8-1.8 2.5-1.8Z"></path></svg>Wanna<span class="g">Go</span></a>
+    <div class="spacer"></div><a class="nav-link" href="login.html">Log in</a><a class="btn btn-primary btn-sm" href="register.html">Join WannaGo</a></div></nav>
+<main id="app">
+<section class="ns-hero"><span class="ns-kicker">WannaGo</span><h1>Every table you've been<br><em>meaning to try.</em></h1><p class="sub">Loading the preview…</p></section>
+</main>
+<script>
+/* ═══════════ MOCK DATA (backend replaces this) ═══════════ */
+const INTERESTS = ["Travel","Live music","Fitness","Fine dining","Art & museums","Film","Reading","Cooking","Football","Photography","Board games","Dancing"];
+
+const UNS = id => `https://images.unsplash.com/${id}?auto=format&fit=crop&w=1000&q=70`;
+const VENUES = [ // stands in for Google Places Autocomplete responses
+  {id:"v1", name:"Lume Rooftop", addr:"123 W 20th St, Chelsea, New York, NY", lat:40.7420, lng:-73.9967, provider:"opentable", photo:UNS("photo-1559339352-11d035aa65de"), tags:["TikTok famous","Most booked"], partner:true, perk:"Priority table + welcome toast"},
+  {id:"v2", name:"Casa Verde", addr:"88 Prince St, SoHo, New York, NY", lat:40.7246, lng:-73.9986, provider:"resy", photo:UNS("photo-1517248135467-4c7edcad34c4"), tags:["Instagram favorite"], partner:true, perk:"Chef's snack on arrival"},
+  {id:"v3", name:"The Harbor Grill", addr:"14 Pier A, Battery Park, New York, NY", lat:40.7043, lng:-74.0180, provider:"opentable", photo:UNS("photo-1414235077428-338989a2e8c0"), tags:["Local classic"]},
+  {id:"v4", name:"Skyline 45", addr:"45 E 45th St, Midtown, New York, NY", lat:40.7532, lng:-73.9787, provider:"resy", photo:UNS("photo-1552566626-52f8b828add9"), tags:["TikTok famous","New & hot"]},
+  {id:"v5", name:"Velvet Note Jazz Room", addr:"197 Bleecker St, Greenwich Village, New York, NY", lat:40.7290, lng:-74.0007, provider:null, photo:UNS("photo-1493225457124-a3eb161ffa5f"), tags:["Hidden gem"]},
+  {id:"v6", name:"Vinea Wine Garden", addr:"301 Kent Ave, Williamsburg, Brooklyn, NY", lat:40.7139, lng:-73.9668, provider:"opentable", photo:UNS("photo-1510812431401-41d2bd2722f3"), tags:["Instagram favorite","Most booked"], partner:true, perk:"Reserved garden table"},
+];
+
+/* ═══════════ SCHEDULING (windows offered by her, picked by him, locked by her) ═══════════ */
+const DAY = 86400000;
+const SLOT_PRESETS = [
+  {from:[18,0],  to:[20,30], label:"6:00 – 8:30 PM"},
+  {from:[19,0],  to:[21,30], label:"7:00 – 9:30 PM"},
+  {from:[19,30], to:[22,0],  label:"7:30 – 10:00 PM"},
+  {from:[19,0],  to:[22,0],  label:"Evening, flexible", flex:true},
+];
+function mkWin(offset, slot){
+  const sp = SLOT_PRESETS[slot];
+  const a = new Date(Date.now()+offset*DAY); a.setHours(sp.from[0],sp.from[1],0,0);
+  const b = new Date(Date.now()+offset*DAY); b.setHours(sp.to[0],sp.to[1],0,0);
+  return {id:"w"+offset+"s"+slot, start:a.toISOString(), end:b.toISOString(), flex:!!sp.flex};
+}
+const wDay  = w => new Date(w.start).toLocaleDateString("en-US",{weekday:"short",month:"short",day:"numeric"});
+const wTime = w => w.flex ? "Evening, flexible"
+  : new Date(w.start).toLocaleTimeString("en-US",{hour:"numeric",minute:"2-digit"}) + " – " + new Date(w.end).toLocaleTimeString("en-US",{hour:"numeric",minute:"2-digit"});
+const wWhen = iso => new Date(iso).toLocaleString("en-US",{weekday:"short",month:"short",day:"numeric",hour:"numeric",minute:"2-digit"});
+
+/* ═══════════ VENUE HIGHLIGHTS + TRUST BADGES ═══════════ */
+const venueTag1 = v => { const t = v.partner ? "WannaGo partner" : (v.tags||[])[0]; return t ? `<span class="vtag onimg">${t}</span>` : ""; };
+const venueTags = (v, max) => (v.partner?`<span class="vtag partner">WannaGo partner</span>`:"") + (v.tags||[]).slice(0, max||3).map(t=>`<span class="vtag">${t}</span>`).join("");
+function vBadges(u){
+  const v = u.verify || {};
+  let out = "";
+  if(v.photo) out += `<span class="vpill">✓ Photo verified</span>`;
+  if(pricingMode()!=="subscription"){
+    if(v.id) out += `<span class="vpill">✓ ID verified</span>`;
+    if(v.bg) out += `<span class="vpill gold">✓ Background checked</span>`;
+  }
+  return out ? `<div class="vpills">${out}</div>` : "";
+}
+function fullyVerified(u){ return !!(u.verify && u.verify.id && u.verify.bg); }
+
+/* ═══════════ PREFERENCE MATCHING + PRONOUNS ═══════════ */
+const seeksOk = (a,b) => (a.seeks||"everyone")==="everyone" || a.seeks === (b.gender==="man" ? "men" : "women");
+const matchOk = (f,c) => !!(f && c) && seeksOk(f,c) && seeksOk(c,f);
+const gShe  = u => u.gender==="man" ? "he"  : "she";
+const gHer  = u => u.gender==="man" ? "his" : "her";
+const gHerO = u => u.gender==="man" ? "him" : "her";
+
+/* ═══════════ BUSINESS MODEL (demo toggle in admin) ═══════════ */
+const PRICING = {memberFee:25, takeRate:0.12, subMen:25, subWomen:15, trialDays:30, hold:99};
+function pricingMode(){ return DB.pricing || "take"; }
+function setPricing(mode){ DB.pricing = mode; save(); toast(mode==="subscription" ? "Phase 2 preview: subscriptions" : "Launch model: fee per accepted invitation"); render(); }
+function calcFee(amt){ return pricingMode()==="take" ? Math.round(amt * PRICING.takeRate) : 0; }
+function feeLineHTML(amt){
+  if(pricingMode()==="membership") return `No service fees — covered by your membership.`;
+  if(pricingMode()==="subscription") return `No service fees — covered by your subscription.`;
+  if(!amt || amt<=0) return `A 12% WannaGo service fee is added at checkout — it funds verification and show-up protection.`;
+  const fee = calcFee(amt);
+  return `${fmt(amt)} evening + ${fmt(fee)} service fee (12%) = <b>${fmt(amt+fee)}</b> charged to you.`;
+}
+function feePreview(){ if($("f-fee")) $("f-fee").innerHTML = feeLineHTML(+$("f-amt").value || 0); }
+function mockJoin(){
+  const me = user(DB.session); if(!me) return;
+  me.member = true; save();
+  toast("Membership active — $25 (demo)"); render();
+}
+function mockSubscribe(){
+  const me = user(DB.session); if(!me) return;
+  me.sub = true; save();
+  toast("Subscribed — $" + (me.role==="funder" ? PRICING.subMen : PRICING.subWomen) + "/month (demo)"); render();
+}
+function trialDaysLeft(u){
+  if(!u || !u.trialStart) return PRICING.trialDays;
+  return Math.max(0, PRICING.trialDays - Math.floor((Date.now() - new Date(u.trialStart).getTime())/DAY));
+}
+function mockVerify(){
+  const me = user(DB.session); if(!me) return;
+  me.verify = {photo:true, id:true, bg:true}; save();
+  toast("Verified — ID and background check complete"); render();
+}
+
+const grads = [ // warm placeholder tones — real photos replace these
+  ["#C4623F","#8C3F24"],["#8A9A7E","#5C6E52"],["#B0805B","#7A4E2D"],
+  ["#C08575","#8E5546"],["#6E7F6A","#465545"],["#A3693F","#6E4021"]
+];
+
+const SEED = {
+  users: [
+    {id:"u1", role:"curator", gender:"woman", seeks:"men", name:"Sofia Marin", age:27, email:"sofia@demo", bio:"Interior architect who collects rooftops and good corner tables. I plan the evening; you bring good conversation.", photos:2, g:0, photo:"https://randomuser.me/api/portraits/women/44.jpg", gallery:["https://randomuser.me/api/portraits/women/44.jpg","https://randomuser.me/api/portraits/women/47.jpg"], verify:{photo:true}, trialStart:new Date(Date.now()-12*DAY).toISOString()},
+    {id:"u2", role:"curator", gender:"woman", seeks:"men", name:"Emma Clarke", age:25, email:"emma@demo", bio:"Med student, jazz obsessive, will absolutely judge your dessert order (kindly).", photos:3, g:1, photo:"https://randomuser.me/api/portraits/women/68.jpg", gallery:["https://randomuser.me/api/portraits/women/68.jpg","https://randomuser.me/api/portraits/women/21.jpg","https://randomuser.me/api/portraits/women/25.jpg"], verify:{photo:true}, trialStart:new Date(Date.now()-3*DAY).toISOString()},
+    {id:"u3", role:"curator", gender:"woman", seeks:"everyone", name:"Isabelle Laurent", age:30, email:"isabelle@demo", bio:"Gallery curator. My ideal date has a view, a story, and no small talk.", photos:1, g:2, photo:"https://randomuser.me/api/portraits/women/65.jpg", gallery:["https://randomuser.me/api/portraits/women/65.jpg"], verify:{photo:true}, trialStart:new Date(Date.now()-25*DAY).toISOString()},
+    {id:"u4", role:"funder", gender:"man", seeks:"women", name:"Daniel Reyes", age:31, email:"daniel@demo", bio:"Product manager, amateur chef, semi-retired midfielder. I show up on time and I tip well.", photos:2, g:3, interests:["Travel","Fine dining","Football","Cooking"], photo:"https://randomuser.me/api/portraits/men/32.jpg", gallery:["https://randomuser.me/api/portraits/men/32.jpg","https://randomuser.me/api/portraits/men/45.jpg"], verify:{photo:true, id:true, bg:true}, member:true, sub:true},
+    {id:"u5", role:"funder", gender:"man", seeks:"women", name:"James Carter", age:29, email:"james@demo", bio:"Architect. I like long dinners, longer walks, and museums that stay open late.", photos:1, g:5, interests:["Art & museums","Photography","Reading","Travel"], photo:"https://randomuser.me/api/portraits/men/86.jpg", gallery:["https://randomuser.me/api/portraits/men/86.jpg"], verify:{photo:true, id:true, bg:true}, member:true, sub:true},
+    {id:"u6", role:"admin", name:"WannaGo Admin", email:"admin@demo"},
+  ],
+  posts: [
+    {id:"p1", womanId:"u1", venue:VENUES[0], idea:"Sunset dinner on the rooftop, then a slow walk on the High Line. Golden hour is non-negotiable.", min:250, max:400, status:"open", fundedBy:null, amount:null, created:"2026-07-01T18:20:00"},
+    {id:"p2", womanId:"u2", venue:VENUES[4], idea:"Live jazz night — good set, better company. We split small plates and argue about the saxophonist.", min:120, max:220, status:"funded", fundedBy:"u5", amount:180, created:"2026-06-29T21:05:00"},
+    {id:"p3", womanId:"u3", venue:VENUES[3], idea:"Dinner with the skyline as the backdrop. Come with one story you've never told on a first date.", min:300, max:500, status:"open", fundedBy:null, amount:null, created:"2026-07-02T10:44:00"},
+  ],
+  matches: [],
+  invites: [],
+  session: null,
+  pricing: "take",
+  mech: "invite",
+};
+SEED.users[0].wishlist = ["v1","v2","v4"];
+SEED.users[1].wishlist = ["v2","v5"];
+SEED.users[2].wishlist = ["v1","v6"];
+SEED.users[3].wishlist = ["v1","v4","v6"];
+SEED.users[4].wishlist = ["v2","v3","v5"];
+SEED.invites = [{id:"i1", manId:"u5", womanId:"u1", venueId:"v2", amount:99, fee:12, msg:"Casa Verde has been on my list for months — saw it is on yours too. Join me?", windows:[mkWin(4,1), mkWin(6,2), mkWin(11,2)], status:"pending", at:new Date().toISOString()}];
+SEED.posts[0].windows = [mkWin(3,1), mkWin(5,2), mkWin(12,3)];
+SEED.posts[1].windows = [mkWin(4,1), mkWin(6,2)];
+SEED.posts[1].picks = SEED.posts[1].windows.map(w=>w.id);
+SEED.posts[2].windows = [mkWin(2,0), mkWin(8,2)];
+
+
+/* ═══════════ PERSISTENCE (localStorage mock backend) ═══════════ */
+function seed(){ return JSON.parse(JSON.stringify(SEED)); }
+let DB;
+try { DB = JSON.parse(localStorage.getItem("wannago-db-2")) || seed(); } catch(e){ DB = seed(); }
+(function(){ try {
+  SEED.users.forEach(su=>{ const u=DB.users.find(x=>x.id===su.id); if(u && !u.photo && su.photo) u.photo=su.photo; });
+  (DB.posts||[]).forEach(p=>{ const v=VENUES.find(x=>x.id===(p.venue&&p.venue.id)); if(v && p.venue && !p.venue.photo) p.venue.photo=v.photo; });
+  (DB.posts||[]).forEach((p,i)=>{ if(!p.windows||!p.windows.length){ p.windows=[mkWin(2+i,1), mkWin(5+i,2), mkWin(9+i,3)]; if(p.fundedBy && !p.picks) p.picks=p.windows.slice(0,2).map(w=>w.id); } });
+  DB.users.forEach(u=>{
+    if(u.role==="woman"){ u.role="curator"; u.gender=u.gender||"woman"; }
+    else if(u.role==="man"){ u.role="funder"; u.gender=u.gender||"man"; }
+    if(u.role && u.role!=="admin"){
+      if(!u.gender) u.gender = u.role==="curator" ? "woman" : "man";
+      if(!u.seeks){ const su=SEED.users.find(x=>x.id===u.id); u.seeks = (su&&su.seeks) || (u.role==="curator" ? "men" : "women"); }
+    }
+  });
+  DB.users.forEach(u=>{ if(!u.verify && u.role && u.role!=="admin"){ const su=SEED.users.find(x=>x.id===u.id); u.verify = (su&&su.verify) ? su.verify : {photo:true}; } });
+  (DB.posts||[]).forEach(p=>{ const v=VENUES.find(x=>x.id===(p.venue&&p.venue.id)); if(v && p.venue){ if(!p.venue.tags) p.venue.tags=v.tags; if(p.venue.partner===undefined){ p.venue.partner=v.partner; p.venue.perk=v.perk; } } });
+  (DB.matches||[]).forEach(m=>{ if(!m.checkin) m.checkin={w:false,m:false}; });
+  if(!DB.pricing || DB.pricing === "membership") DB.pricing = "take";
+  if(!DB.mech) DB.mech = "invite";
+  if(!DB.invites) DB.invites = JSON.parse(JSON.stringify(SEED.invites||[]));
+  DB.users.forEach(u=>{ if(u.role!=="admin" && !u.gallery){ const su=SEED.users.find(x=>x.id===u.id); u.gallery = (su&&su.gallery) ? su.gallery.slice() : (u.photo ? [u.photo] : []); u.photos = u.gallery.length || u.photos || 0; } });
+  DB.users.forEach(u=>{ if(u.role!=="admin" && !u.wishlist){ const su=SEED.users.find(x=>x.id===u.id); u.wishlist = (su&&su.wishlist) ? su.wishlist.slice() : []; } });
+  DB.users.forEach(u=>{ if(u.role==="funder" && u.member===undefined){ const su=SEED.users.find(x=>x.id===u.id); u.member = !!(su && su.member); } });
+  DB.users.forEach(u=>{
+    if(u.role==="funder" && u.sub===undefined){ const su=SEED.users.find(x=>x.id===u.id); u.sub = !!(su && su.sub); }
+    if(u.role==="curator" && !u.trialStart){ const su=SEED.users.find(x=>x.id===u.id); u.trialStart = (su && su.trialStart) ? su.trialStart : new Date().toISOString(); }
+  });
+} catch(e){} })();
+function save(){ try { localStorage.setItem("wannago-db-2", JSON.stringify(DB)); } catch(e){} }
+function resetDemo(){ try { localStorage.removeItem("wannago-db-2"); } catch(e){}; DB = seed(); location.hash = ""; render(); toast("Demo data reset"); }
+function mapRoute(h){
+  const [r,a] = h.replace(/^#\//,"").split("/");
+  switch(r){
+    case "register": return a==="woman" ? "register-woman.html" : a==="man" ? "register-man.html" : "register.html";
+    case "login": return "login.html";
+    case "woman": return "woman-dashboard.html";
+    case "browse": return "man-browse.html";
+    case "fund": return "fund-date.html?post="+a;
+    case "post": return "post-detail.html?post="+a;
+    case "match": return "match-confirmed.html?match="+a;
+    case "admin": return "admin.html";
+    case "trending": return "trending.html";
+    default: return "landing.html";
+  }
+}
+function toastNext(m){ try { sessionStorage.setItem("dateout-toast", m); } catch(e){} }
+
+/* ═══════════ HELPERS ═══════════ */
+const $ = id => document.getElementById(id);
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const user = id => DB.users.find(u => u.id === id);
+const fmt = n => "$" + Number(n).toLocaleString();
+const go = h => { const t = (h.startsWith("#/") ? mapRoute(h) : h); if ("#"+t === location.hash){ render(); } else { location.hash = t; } };
+const ago = iso => { const m = Math.max(1, Math.round((Date.now() - new Date(iso)) / 60000)); if (m < 60) return m + "m ago"; const h = Math.round(m/60); if (h < 24) return h + "h ago"; return Math.round(h/24) + "d ago"; };
+const stamp = iso => new Date(iso).toLocaleString("en-GB",{day:"numeric",month:"short",year:"numeric",hour:"2-digit",minute:"2-digit"});
+
+function toast(msg){ document.querySelectorAll(".toast").forEach(t=>t.remove()); const t=document.createElement("div"); t.className="toast"; t.innerHTML=I.check+" "+esc(msg); document.body.appendChild(t); setTimeout(()=>t.remove(),2800); }
+
+/* Tabler-style inline icons */
+const I = {
+  pin:'<svg class="icon" viewBox="0 0 24 24"><path d="M9 11a3 3 0 1 0 6 0a3 3 0 0 0 -6 0"/><path d="M17.657 16.657L13.414 20.9a2 2 0 0 1 -2.827 0l-4.244-4.243a8 8 0 1 1 11.314 0z"/></svg>',
+  heart:'<svg class="icon" viewBox="0 0 24 24"><path d="M19.5 12.572l-7.5 7.428l-7.5-7.428a5 5 0 1 1 7.5-6.566a5 5 0 1 1 7.5 6.572"/></svg>',
+  heartF:'<svg class="icon" viewBox="0 0 24 24" style="fill:currentColor;stroke:none"><path d="M6.979 3.074a6 6 0 0 1 4.988 1.425l.037 .033l.034 -.03a6 6 0 0 1 4.733 -1.44l.246 .036a6 6 0 0 1 3.364 10.008l-.18 .185l-.048 .041l-7.45 7.379a1 1 0 0 1 -1.313 .082l-.094 -.082l-7.493 -7.422a6 6 0 0 1 3.176 -10.215z"/></svg>',
+  spark:'<svg class="icon" viewBox="0 0 24 24"><path d="M16 18a2 2 0 0 1 2 2a2 2 0 0 1 2 -2a2 2 0 0 1 -2 -2a2 2 0 0 1 -2 2zm0 -12a2 2 0 0 1 2 2a2 2 0 0 1 2 -2a2 2 0 0 1 -2 -2a2 2 0 0 1 -2 2zm-7 12a6 6 0 0 1 6 -6a6 6 0 0 1 -6 -6a6 6 0 0 1 -6 6a6 6 0 0 1 6 6z"/></svg>',
+  wallet:'<svg class="icon" viewBox="0 0 24 24"><path d="M17 8V5a1 1 0 0 0 -1 -1H6a2 2 0 0 0 0 4h12a1 1 0 0 1 1 1v3m0 4v3a1 1 0 0 1 -1 1H6a2 2 0 0 1 -2 -2V6"/><path d="M20 12v4h-4a2 2 0 0 1 0 -4h4"/></svg>',
+  cal:'<svg class="icon" viewBox="0 0 24 24"><path d="M4 7a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2z"/><path d="M16 3v4M8 3v4M4 11h16"/></svg>',
+  userC:'<svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="10" r="3"/><path d="M6.168 18.849a4 4 0 0 1 3.832 -2.849h4a4 4 0 0 1 3.834 2.855"/></svg>',
+  cam:'<svg class="icon" viewBox="0 0 24 24"><path d="M5 7h1a2 2 0 0 0 2-2a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1a2 2 0 0 0 2 2h1a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2"/><circle cx="12" cy="13" r="3"/></svg>',
+  out:'<svg class="icon" viewBox="0 0 24 24"><path d="M14 8V6a2 2 0 0 0 -2 -2H5a2 2 0 0 0 -2 2v12a2 2 0 0 0 2 2h7a2 2 0 0 0 2 -2v-2"/><path d="M9 12h12l-3 -3m0 6l3 -3"/></svg>',
+  shield:'<svg class="icon" viewBox="0 0 24 24"><path d="M11.46 20.846a12 12 0 0 1 -7.96 -14.846a12 12 0 0 0 8.5 -3a12 12 0 0 0 8.5 3a12 12 0 0 1 -.09 7.06"/><path d="M15 19l2 2l4 -4"/></svg>',
+  check:'<svg class="icon sm" viewBox="0 0 24 24" style="color:var(--success)"><path d="M5 12l5 5l10 -10"/></svg>',
+  chev:'<svg class="icon sm" viewBox="0 0 24 24"><path d="M9 6l6 6l-6 6"/></svg>',
+  search:'<svg class="icon" viewBox="0 0 24 24"><circle cx="10" cy="10" r="7"/><path d="M21 21l-6-6"/></svg>',
+  send:'<svg class="icon" viewBox="0 0 24 24"><path d="M10 14l11 -11"/><path d="M21 3l-6.5 18a.55 .55 0 0 1 -1 0l-3.5 -7l-7 -3.5a.55 .55 0 0 1 0 -1z"/></svg>',
+};
+
+/* Avatar / photo placeholders — real app swaps these for uploaded photos */
+function avatar(u, size, ring){
+  const g = grads[u.g ?? 0], init = u.name.split(" ").map(w=>w[0]).slice(0,2).join("");
+  const img = u.photo ? `<img src="${u.photo}" alt="${esc(u.name)}" loading="lazy" onerror="this.remove()">` : "";
+  return `<div class="avatar ${ring||""}" style="width:${size}px;height:${size}px;font-size:${Math.round(size*.36)}px;background:linear-gradient(135deg,${g[0]},${g[1]})">${init}${img}</div>`;
+}
+function photoBG(u){ const g = grads[u.g ?? 0]; return `background:
+  radial-gradient(circle at 78% 18%, rgba(255,255,255,.22), transparent 42%),
+  radial-gradient(circle at 20% 85%, rgba(7,7,14,.35), transparent 55%),
+  linear-gradient(135deg,${g[0]},${g[1]})`; }
+function photoBlock(u, extra){
+  const img = u.photo ? `<img class="ph-img" src="${u.photo}" alt="${esc(u.name)}" loading="lazy" onerror="this.remove()">` : "";
+  return `<div class="photo" style="${photoBG(u)}">${img}<div class="scrim"></div>
+    <div class="who"><div class="name">${esc(u.name)}, ${u.age}<span class="vtick" title="Photo verified">✓</span></div>
+    <div class="small" style="color:rgba(255,255,255,.75)">${I.cam.replace('class="icon"','class="icon sm"')} ${u.photos} photo${u.photos>1?"s":""}${extra||""}</div></div></div>`;
+}
+function venueBanner(v, h){
+  if(!v || !v.photo) return "";
+  return `<div class="venue-banner" style="height:${h||180}px"><img src="${v.photo}" alt="${esc(v.name)}" loading="lazy" onerror="if(!this.dataset.f){this.dataset.f=1;this.src='https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=1000&q=70'}else{this.parentNode.remove()}"><span class="vb-tag">${I.pin.replace('class="icon"','class="icon sm"')} ${esc(v.name)}</span></div>`;
+}
+
+/* ═══════════ NAV ═══════════ */
+
+/* ═══════════ LEGAL (draft content pending counsel review) ═══════════ */
+const LEGAL = {
+terms: {title:"Terms", body:`
+<h4>1. What WannaGo is</h4><p>WannaGo is a restaurant discovery and social invitation platform. Members build lists of places they want to go; other members may invite them to an evening at a place both have listed. WannaGo is a technology platform only: we are not a restaurant, a party to any meal or relationship, and we are not affiliated with the venues shown unless expressly marked as a partner.</p>
+<h4>2. Eligibility and your account</h4><p>You must be 18 or older. By creating an account you confirm your age, that your photos and information are your own and accurate, and that you will maintain only one account. Profiles are photo-verified; verification is a screening tool, not a guarantee of anyone's identity or conduct.</p>
+<h4>3. Invitations and the attendance commitment</h4><p>Sending an invitation is a commitment to attend if it is accepted. To make that commitment real, when you send an invitation you authorize us to place a temporary authorization ("show-up hold," currently $99) on your payment card through our payment processor. A hold is not a charge: no funds are collected, and if your invitation is declined or expires within 5 days, the hold is released automatically.</p>
+<h4>4. WannaGo never handles your meal</h4><p>You pay the restaurant directly, however you normally would — your card, cash, or otherwise. WannaGo is never a party to the meal transaction, sets no menu prices, and collects no payment on any venue's behalf. Your payment obligations at a venue are between you and that venue, and any dispute about a meal must be resolved with the venue.</p>
+<h4>5. Cancellation and no-shows</h4><p>You may cancel a confirmed date free of charge up to 24 hours before its scheduled time, in the app. Inside 24 hours, or if you fail to appear, the other member may report a no-show. Before any charge, we notify you and give you at least 24 hours to respond, plus a grace window on the night itself. A missed check-in alone never results in a charge; a charge occurs only when a no-show is reported and you do not respond. On a confirmed no-show, we may capture a portion of your show-up hold as a no-show fee — between 50% and 100% depending on how much notice you gave — and the reporting member's service fee is refunded. At launch, captured no-show fees are retained by WannaGo; we may later share a portion with the member who was stood up, including as instant dining credit, and will update these terms when we do.</p>
+<h4>6. Check-in</h4><p>Both members are asked to confirm attendance on the night through the app. Checking in is how holds are released promptly; it is each member's responsibility, and we send reminders to make it one tap.</p>
+<h4>7. Repeated no-shows</h4><p>Confirmed no-shows count as strikes. Three strikes within 12 months results in suspension; continued abuse results in removal. We may also restrict accounts pending review of reported conduct.</p>
+<h4>8. Service fee</h4><p>Where applicable, WannaGo charges a service fee (currently 12% of the show-up hold) when an invitation is accepted. Fees are shown before you send, and are automatically refunded if your confirmed date does not occur because of the other member's no-show.</p>
+<h4>9. Payment authorizations</h4><p>Card information is collected and stored by our payment processor, Stripe — WannaGo never stores your card number. By providing a card, you represent that you are authorized to use it and that sufficient credit is available for the hold. You agree to receive notifications about holds, releases, and any no-show reports affecting your account.</p>
+<h4>10. Member conduct</h4><p>No harassment, solicitation, or commercial activity. WannaGo may not be used to offer or seek paid companionship of any kind; asking another member for money or gifts in any form results in immediate removal. A declined invitation is a complete answer.</p>
+<h4>11. Subscriptions and promotions</h4><p>If subscription plans are offered, pricing, trials, and promotional discounts are stated at signup and may change with notice. Cancel any time; access continues through the paid period.</p>
+<h4>12. Venue information</h4><p>Venue names, photos, and details come from third-party services (including Google) and from member activity. We do not guarantee availability, pricing, or reservations. Trending rankings reflect member lists; sponsored placement, if any, is labeled.</p>
+<h4>13. Your interactions are yours</h4><p>Members are solely responsible for their interactions with other members and with venues, on or off the platform. To the maximum extent permitted by law, you release WannaGo, Inc. from claims arising out of those interactions. Our total liability is limited to the fees you paid us in the 12 months before a claim.</p>
+<h4>14. Disputes</h4><p>These terms are governed by Texas law. Disputes are resolved by binding individual arbitration in Dallas County, Texas, and you waive participation in class actions, except that qualifying claims may be brought in small-claims court.</p>
+<h4>15. Changes and termination</h4><p>We may update these terms with notice in the app; continued use means acceptance. We may suspend or terminate accounts that violate these terms. You may delete your account at any time.</p>`},
+privacy: {title:"Privacy", body:`
+<h4>What we collect</h4><p>Profile details you provide (name, age, photos, bio, interests), your venue list and activity (invitations, check-ins), approximate city for local results, and device/usage data. Payment cards are collected and stored by Stripe, our payment processor — WannaGo never stores your card number.</p>
+<h4>How we use it</h4><p>To operate the service: showing overlap-based matches, computing trending venues (always as aggregate counts, never revealing your individual list), sending reminders, preventing fraud and abuse, and improving the product.</p>
+<h4>What others see</h4><p>Your profile is visible to members you can match with. Your venue list is private; another member sees only the specific venues that appear on both of your lists, and only after an overlap exists. Check-in status is visible only to your confirmed date.</p>
+<h4>Who we share with</h4><p>Service providers acting for us: Stripe (payments), our hosting and SMS providers, and Google (venue data, maps). We do not sell personal information. We disclose data if required by law or to protect members' safety.</p>
+<h4>Your choices</h4><p>Edit or delete your profile and list at any time. Account deletion removes your profile and list; records required for payment, safety, or legal purposes are retained as required. Contact privacy@wannago.app for access or deletion requests.</p>
+<h4>Safety-related data</h4><p>No-show reports, blocks, and abuse reports are retained to protect the community even after the reporting account closes.</p>`},
+guidelines: {title:"Guidelines", body:`
+<h4>Be who your photos say you are</h4><p>Real, recent photos of you. Verification exists so nobody wastes an evening on a stranger who doesn't exist.</p>
+<h4>Show up</h4><p>The entire point. Accept only when you mean it; cancel free up to 24 hours before if life happens. A confirmed no-show costs the hold and counts as a strike — three strikes in 12 months and your account is suspended.</p>
+<h4>The table is the deal</h4><p>An invitation is dinner at a place you both want to try. It is never an offer or expectation of anything else. Asking for money, gifts, or "compensation" in any form is an immediate ban.</p>
+<h4>Respect the no</h4><p>A pass is a complete answer. Repeated invitations to someone who passed, or contact outside the app without consent, is harassment.</p>
+<h4>No commercial activity</h4><p>No promotion, solicitation, sugar-dating, escorting, or link-dropping. This is a place to go to dinner.</p>
+<h4>Report what's wrong</h4><p>Reporting tools are being built into the beta. Until then, contact safety@wannago.app — reports are confidential.</p>`},
+safety: {title:"Safety", body:`
+<h4>Built-in protections</h4><p>Every date happens in a public restaurant — that is the product. Profiles are photo-verified. Invitations require a financial commitment, which filters out people who aren't serious. Both parties confirm attendance.</p>
+<h4>Before you go</h4><p>Tell a friend where you're going and who with — the ticket screen is easy to screenshot. Look up the venue. Arrange your own transportation there and back.</p>
+<h4>At the table</h4><p>You owe nobody anything — not affection, not your time past dessert, not a second date. The hold is his commitment to show up, never a claim on you. If anything feels off, leave; staff can help.</p>
+<h4>What verification means — and doesn't</h4><p>Photo verification confirms a profile matches a real person's face. It is not a background check and cannot predict behavior. Trust your instincts over any badge.</p>
+<h4>If something goes wrong</h4><p>In an emergency, call 911 first. Then tell us: safety@wannago.app. Reports of harassment or misconduct lead to investigation and removal, and we cooperate with law enforcement.</p>`}
+};
+function showLegal(key){
+  closeLegal();
+  const d = document.createElement("div"); d.className = "legal-overlay"; d.id = "legal";
+  const tabs = ["terms","privacy","guidelines","safety"];
+  d.innerHTML = `<div class="legal-card">
+    <div class="legal-head">
+      <div class="legal-tabs">${tabs.map(t=>`<button class="tab ${t===key?"on":""}" onclick="showLegal('${t}')">${LEGAL[t].title}</button>`).join("")}</div>
+      <button class="btn btn-ghost btn-sm" onclick="closeLegal()">✕ Close</button>
+    </div>
+    <div class="legal-body">
+      <div class="legal-draft">Draft for demo purposes — to be reviewed by licensed counsel before launch.</div>
+      ${LEGAL[key].body}
+    </div></div>`;
+  d.onclick = e => { if(e.target === d) closeLegal(); };
+  document.body.appendChild(d);
+}
+function closeLegal(){ const el = document.getElementById("legal"); if(el) el.remove(); }
+
+function renderNav(){
+  const s = DB.session ? user(DB.session) : null;
+  let links = "";
+  if (!s) links = `<a class="nav-link" href="login.html">Log in</a><a class="btn btn-primary btn-sm" href="register.html">Join WannaGo</a>`;
+  else if (s.role === "curator") links = `<a class="nav-link" href="woman-dashboard.html">${mech()==="invite"?"My invitations":"My dates"}</a><a class="nav-user" href="profile.html" title="Edit profile">${avatar(s,34,"ring")} <span class="uname">${esc(s.name.split(" ")[0])}</span></a><button class="btn btn-ghost btn-sm" onclick="logout()">${I.out}<span class="lbl-hide-sm">Log out</span></button>`;
+  else if (s.role === "funder") links = `<a class="nav-link" href="man-browse.html">${mech()==="invite"?"Find a table":"Browse dates"}</a><a class="nav-user" href="profile.html" title="Edit profile">${avatar(s,34,"ring-p")} <span class="uname">${esc(s.name.split(" ")[0])}</span></a><button class="btn btn-ghost btn-sm" onclick="logout()">${I.out}<span class="lbl-hide-sm">Log out</span></button>`;
+  else links = `<a class="nav-link" href="admin.html">Admin panel</a><button class="btn btn-ghost btn-sm" onclick="logout()">${I.out}<span class="lbl-hide-sm">Log out</span></button>`;
+  $("nav").innerHTML = `
+    <a class="brand" href="landing.html"><svg width="34" height="34" viewBox="0 0 64 64"><defs><linearGradient id="ng" x1="8" y1="4" x2="56" y2="62" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#C4623F"/><stop offset="1" stop-color="#A94F30"/></linearGradient></defs><path fill-rule="evenodd" fill="url(#ng)" d="M32 4C18.745 4 8 14.745 8 28C8 45 32 62 32 62C32 62 56 45 56 28C56 14.745 45.255 4 32 4ZM22 16h2.2v7.2h1.1V16h2.2v7.2h1.1V16h2.2v9c0 2-1.4 3-2.6 3.2V40c0 1.5-.8 2.2-1.8 2.2c-1 0-1.8-.7-1.8-2.2V28.2c-1.2-.2-2.6-1.2-2.6-3.2ZM38.2 16c2.9 1.3 4.3 5 4.3 9.5c0 2.7-1 4.3-3 5V40c0 1.5-.8 2.2-1.9 2.2c-1.1 0-1.9-.7-1.9-2.2V17.8c0-1.2.8-1.8 2.5-1.8Z"/></svg>Wanna<span class="g">Go</span></a>
+    <div class="spacer"></div><a class="nav-link" href="trending.html">Trending</a>${links}`;
+}
+function logout(){ DB.session = null; save(); toastNext("Logged out"); go("#/"); }
+
+/* ═══════════ PAGES ═══════════ */
+const P = {};
+
+/* 1 · Landing */
+P.landing = () => {
+  const sofia = user("u1"), daniel = user("u4");
+  const sess = DB.session ? user(DB.session) : null;
+  const ctaHref = !sess ? "register.html" : sess.role==="curator" ? "woman-dashboard.html" : sess.role==="funder" ? "man-browse.html" : "admin.html";
+  const ctaLabel = !sess ? "Create account" : sess.role==="curator" ? "Open my invitations" : sess.role==="funder" ? "Find a table" : "Open the admin panel";
+  const bokeh = [[8,18,26],[78,10,34],[62,32,18],[16,64,30],[88,58,22],[38,8,14],[70,80,26],[26,84,20]]
+    .map(([x,y,s],k)=>`<i style="left:${x}%;top:${y}%;width:${s}px;height:${s}px;animation-delay:${k*.9}s"></i>`).join("");
+  const wlRow = (v, on, want) => `
+    <div class="wl-row">
+      ${v.photo?`<img class="venue-thumb" src="${v.photo}" alt="" loading="lazy" onerror="this.remove()">`:""}
+      <div style="flex:1;min-width:0"><div style="font-weight:500;font-size:14px">${esc(v.name)}</div><div class="small" style="font-size:11.5px">${want} want to go</div></div>
+      <span class="mini-heart ${on?"on":"off"}">${I.heartF.replace('class="icon"','class="icon sm"')}</span>
+    </div>`;
+  return `
+<section class="ns-hero has-photo">
+  <div class="hero-bg" aria-hidden="true"><img src="${UNS("photo-1555396273-367ea4eb4db5")}" alt="" onerror="this.parentNode.remove()"></div>
+  <div class="bokeh" aria-hidden="true">${bokeh}</div>
+  <h1>Every table you've been<br><em>meaning to try.</em></h1>
+  <p class="sub">You save restaurants on Instagram and never go. WannaGo is the pathway: list the places you want, get invited by someone who wants the same table, and actually show up.</p>
+  <a class="btn btn-primary btn-lg" href="${ctaHref}">${ctaLabel}</a>
+</section>
+
+<section class="venue-strip reveal" style="margin-top:56px">
+  <div class="vs-head"><span class="ns-kicker">Trending on WannaGo</span><h2>This week's <em>most-wanted</em> tables</h2></div>
+  <div class="vs-grid">
+    ${[0,1,3,5].map(i=>`<figure class="vs-card"><img src="${VENUES[i].photo}" alt="${esc(VENUES[i].name)}" loading="lazy" onerror="if(!this.dataset.f){this.dataset.f=1;this.src='https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=1000&q=70'}else{this.closest('figure').remove()}"><figcaption><span class="vtags-row" style="margin-bottom:4px">${venueTag1(VENUES[i])}</span><b>${esc(VENUES[i].name)}</b><span>${esc(VENUES[i].addr.split(",")[1]||"New York")}</span></figcaption></figure>`).join("")}
+  </div>
+  <div style="text-align:center;margin-top:20px"><a class="btn btn-ghost" href="trending.html">See the full trending list ${I.chev}</a></div>
+</section>
+
+<div class="night">
+  <div class="beat reveal">
+    <div class="when"><div class="day">Tuesday</div><div class="clock">7:02 PM</div><p>Sofia hearts the places she's been meaning to try. Thirty seconds, done. Her list stays private.</p></div>
+    <span class="dot"></span>
+    <div class="what">
+      <div class="card" style="max-width:360px;text-align:left">
+        <span class="eyebrow" style="font-size:10px">Sofia's list</span>
+        <div style="margin-top:10px">
+          ${wlRow(VENUES[0], true, 214)}
+          ${wlRow(VENUES[1], true, 187)}
+          ${wlRow(VENUES[4], false, 96)}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="beat flip reveal">
+    <div class="when"><div class="day">Wednesday</div><div class="clock">9:48 PM</div><p>Daniel wants the same table. He can only invite where lists overlap — and every invite carries a real commitment to show up.</p></div>
+    <span class="dot"></span>
+    <div class="what">
+      <div class="yes-card" style="text-align:left">
+        <div class="row">${avatar(daniel,52,"ring-p")}<div><b>${esc(daniel.name)}, ${daniel.age}<span class="vtick" title="Photo verified">✓</span></b><span class="small">Photo verified · 3 invites a week</span></div></div>
+        <p class="small" style="margin:10px 0 8px;font-size:13.5px">"Saw Lume is on your list too — would you like to join me?"</p>
+        <div class="vtags-row"><span class="vtag mine">${I.heartF.replace('class="icon"','class="icon sm" style="width:11px;height:11px;vertical-align:-1px"')} Lume Rooftop — on both lists</span></div>
+      </div>
+      <div class="artifact-note">${I.shield.replace('class="icon"','class="icon sm" style="color:var(--pink)"')} An invitation isn't a DM. He's committed to the night before she's said a word.</div>
+    </div>
+  </div>
+
+  <div class="beat reveal">
+    <div class="when"><div class="day">Thursday</div><div class="clock">8:15 AM</div><p>Sofia picks the evening that works. No chat marathon, no negotiating — just her yes.</p></div>
+    <span class="dot"></span>
+    <div class="what">
+      <div class="card" style="max-width:360px;text-align:left">
+        <span class="eyebrow" style="font-size:10px">Pick the evening</span>
+        <div class="win-pick pick-r on" style="cursor:default"><span class="box"></span><div style="flex:1"><div style="font-weight:500;font-size:14px">Saturday</div><div class="small">7:30 – 10:00 PM</div></div></div>
+        <div class="win-pick pick-r" style="cursor:default"><span class="box"></span><div style="flex:1"><div style="font-weight:500;font-size:14px">Next Thursday</div><div class="small">7:00 – 9:30 PM</div></div></div>
+        <span class="btn btn-primary btn-block yes-glow" style="margin-top:14px">${I.heartF} I'd love to go</span>
+      </div>
+      <div class="artifact-note">${I.heart.replace('class="icon"','class="icon sm" style="color:var(--pink)"')} Or she passes — no reasons owed, and he's none the poorer.</div>
+    </div>
+  </div>
+
+  <div class="beat flip reveal gold">
+    <div class="when"><div class="day">Saturday</div><div class="clock">7:30 PM</div><p>Both show up. That's the whole promise — and the app keeps score.</p></div>
+    <span class="dot"></span>
+    <div class="what">
+      <div class="ticket" style="max-width:400px;margin:0">
+        <div class="stub"><span class="t">It's a date.</span><span class="d">MATCH #0042</span></div>
+        <div class="tbody"><span class="notch l"></span><span class="notch r"></span>
+          ${venueBanner(VENUES[0], 120)}
+          <dl>
+            <div><dt>When</dt><dd>Sat · 7:30 PM</dd></div>
+            <div><dt>Where</dt><dd>Lume Rooftop</dd></div>
+          </dl>
+          <div style="display:flex;gap:8px;margin-top:16px;justify-content:center;flex-wrap:wrap"><span class="vpill">✓ Sofia checked in</span><span class="vpill">✓ Daniel checked in</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="colophon reveal"><span class="face-stack">${["u1","u4","u2","u5","u3"].map(id=>avatar(user(id),34)).join("")}</span> <b>12,400</b> tables wanted &nbsp;·&nbsp; <b>92%</b> showed up</div>
+
+<section class="money-how reveal">
+  <div class="vs-head"><span class="ns-kicker">Why people actually show up</span><h2>Built for the <em>going,</em> not the scrolling</h2></div>
+  <div class="mh-grid">
+    <div class="mh-card">${I.shield.replace('class="icon"','class="icon" style="color:var(--terracotta)"')}<b>Real, verified people</b><p>Every profile is photo-verified. The person at the table is the person in the pictures.</p></div>
+    <div class="mh-card">${I.heart.replace('class="icon"','class="icon" style="color:var(--terracotta)"')}<b>Invites that mean it</b><p>Three invitations a week, each backed by a real commitment. No mass DMs, no maybes — people who ask, show.</p></div>
+    <div class="mh-card">${I.wallet.replace('class="icon"','class="icon" style="color:var(--terracotta)"')}<b>Your list is yours</b><p>Nobody sees your list. Invitations only come from places already on it — so every one starts with something in common.</p></div>
+  </div>
+</section>
+
+<section class="story reveal">
+  <p class="q">"He invited me to the rooftop that had been sitting on <span class="hl">my list</span> for months. All I had to do was say yes."</p>
+  <div class="by">${avatar({name:"Priya S",g:4,photo:"https://randomuser.me/api/portraits/women/79.jpg"},40)} Priya, 27 — first date at Lume, still going</div>
+</section>
+
+<section class="finale">
+  <h2>Your table is <em>waiting.</em></h2>
+  <p>${sess ? "Pick up where you left off." : "Start your list of places — or invite someone who wants the same table. Free to join."}</p>
+  <a class="btn btn-primary btn-lg" href="${ctaHref}">${ctaLabel}</a>
+</section>
+
+<footer class="lp-foot"><div class="base">
+  <span>© 2026 WannaGo, Inc.</span>
+  <nav><a onclick="showLegal('safety')">Safety</a><a onclick="showLegal('guidelines')">Guidelines</a><a onclick="showLegal('privacy')">Privacy</a><a onclick="showLegal('terms')">Terms</a></nav>
+</div></footer>`;
+};
+P.trending = () => {
+  const me = DB.session ? user(DB.session) : null;
+  const BASE = {v1:214, v2:187, v3:41, v4:168, v5:96, v6:153};
+  const rows = VENUES.map(v => ({v, want:(BASE[v.id]||50) + DB.users.filter(u=>(u.wishlist||[]).includes(v.id)).length}))
+    .sort((a,b)=>b.want-a.want);
+  return `
+<div class="container page-head" style="max-width:760px">
+  <span class="eyebrow">This week in New York</span>
+  <h1 style="font-size:2.4rem;margin:10px 0 6px">The most-wanted <em class="serif" style="font-style:italic">tables</em></h1>
+  <p class="sub">Ranked by real lists — how many people want to go. A spot here can't be bought.</p>
+  <div style="margin-top:22px;text-align:left">
+    ${rows.map((r,i)=>`
+    <div class="trend-row">
+      <span class="tr-rank ${i===0?"top":""}">#${i+1}</span>
+      <img class="tr-img" src="${r.v.photo}" alt="${esc(r.v.name)}" loading="lazy" onerror="this.remove()">
+      <div style="flex:1;min-width:0">
+        <div style="font-weight:500;font-size:15.5px">${esc(r.v.name)}</div>
+        <div class="small" style="font-size:12px">${esc((r.v.addr.split(",")[1]||"").trim())}</div>
+        <div class="vtags-row" style="margin-top:5px">${venueTags(r.v,2)}</div>
+      </div>
+      <div style="text-align:right;flex-shrink:0;display:flex;flex-direction:column;align-items:flex-end">
+        <div style="font-weight:700;font-size:16px">${r.want}</div>
+        <div class="small" style="font-size:11px">want to go</div>
+        ${me && me.role!=="admin" ? `<span class="mini-heart ${(me.wishlist||[]).includes(r.v.id)?"on":"off"}" style="margin-top:6px;cursor:pointer" onclick="wishToggle('${r.v.id}')">${I.heartF.replace('class="icon"','class="icon sm"')}</span>` : ``}
+      </div>
+    </div>`).join("")}
+  </div>
+  ${!me ? `<div style="text-align:center;margin-top:26px"><a class="btn btn-primary btn-lg" href="register.html">Start your list — free</a></div>`
+        : `<p class="hint" style="margin-top:18px;text-align:center">Hearting here updates your list everywhere.</p>`}
+</div>`;
+};
+function initLanding(){
+  if (!("IntersectionObserver" in window)) { document.querySelectorAll(".reveal").forEach(el=>el.classList.add("in")); return; }
+  const io = new IntersectionObserver(es => es.forEach(e => { if(e.isIntersecting){ e.target.classList.add("in"); io.unobserve(e.target); } }), {threshold:.18});
+  document.querySelectorAll(".reveal").forEach(el => io.observe(el));
+}
+
+/* 2 · Choose role */
+P.chooseRole = () => `
+<div class="container page-head" style="text-align:center;max-width:760px">
+  <span class="eyebrow">Join WannaGo</span>
+  <h1 style="font-size:clamp(2.2rem,4vw,3rem);margin:12px 0 8px">Which side of the table are you?</h1>
+  <p class="sub">Two sides, one night out. She lists where she wants to go. He invites — and shows up.</p>
+  <div class="role-cards" style="margin-top:36px">
+    <div class="role-card her card hoverable" onclick="go('#/register/woman')">
+      ${I.spark.replace('class="icon"','class="icon lg" style="color:var(--pink)"')}
+      <h3>I make the list</h3><p>Heart the places you've been meaning to try. Invitations can only come from your list — and you pick the evening.</p>
+      <span class="btn btn-primary btn-block">Continue as a woman ${I.chev}</span>
+    </div>
+    <div class="role-card him card hoverable" onclick="go('#/register/man')">
+      ${I.wallet.replace('class="icon"','class="icon lg" style="color:var(--purple-bright)"')}
+      <h3>I do the inviting</h3><p>Pick the places you'd take her, invite where lists overlap, commit to the night.</p>
+      <span class="btn btn-secondary btn-block">Continue as a man ${I.chev}</span>
+    </div>
+  </div>
+</div>`;
+
+/* 3–4 · Registration */
+function regForm(role){
+  const her = role === "woman";
+  return `
+<div class="narrow page-head">
+  <span class="eyebrow ${her?"":"purple"}">${her?"Create your profile · Her side":"Create your profile · His side"}</span>
+  <h1 style="font-size:2.4rem;margin:10px 0 6px">${her?"Tell them who they're dressing up for":"Tell her who's showing up"}</h1>
+  <p class="sub">${her?"Your profile travels with every date you post.":"She sees everything below before she approves a match."}</p>
+  <div class="panel" style="margin-top:26px">
+    <div class="grid-2">
+      <div><label class="f">Full name</label><input id="r-name" class="input" placeholder="Your name"></div>
+      <div><label class="f">Age</label><input id="r-age" class="input" type="number" min="18" placeholder="18+"></div>
+    </div>
+    <label class="f">Email</label><input id="r-email" class="input" type="email" placeholder="you@example.com">
+    <label class="f">Password</label><input id="r-pass" class="input" type="password" placeholder="8+ characters">
+    <label class="f">Bio</label><textarea id="r-bio" class="input" placeholder="${her?"The short version of you — what a great evening with you looks like.":"The short version of you — why you're worth saying yes to."}"></textarea>
+    <label class="f">Photos <span style="color:var(--muted);font-weight:400">— at least 1 required</span></label>
+    <input type="file" id="ph-file" accept="image/*" multiple style="display:none" onchange="regAddPhotos(this.files); this.value=''">
+    <div class="up-grid" id="up-grid"><button type="button" class="up-add" onclick="pickPhotos()" aria-label="Add photo">+</button></div>
+    <div class="hint" id="up-txt">JPG or PNG, up to 6. First photo is your main photo.</div>
+    ${her ? "" : `<label class="f">Your interests <span style="color:var(--muted);font-weight:400">— she sees these before approving</span></label>
+    <div class="chips" id="chip-grid">${INTERESTS.map(i=>`<button class="pill" onclick="this.classList.toggle('on')">${esc(i)}</button>`).join("")}</div>`}
+    <div id="r-err"></div>
+    <label class="agree"><input type="checkbox" id="r-terms"> <span>I'm 18 or older and I agree to the <a onclick="showLegal('terms')">Terms of Service</a>, <a onclick="showLegal('privacy')">Privacy Policy</a>, and <a onclick="showLegal('guidelines')">Community Guidelines</a>.</span></label>
+    <button class="btn btn-primary btn-lg btn-block" style="margin-top:18px" onclick="register('${role}')">${her?"Create profile & start my list":"Create profile & find a table"}</button>
+    <p class="small" style="text-align:center;margin-top:14px">Already here? <a href="login.html">Log in</a></p>
+  </div>
+</div>`;
+}
+P.regWoman = () => regForm("woman");
+P.regMan   = () => regForm("man");
+
+let uploaded = 0;
+let uploadedPhotos = [];
+function compressImage(file, cb){
+  const r = new FileReader();
+  r.onload = () => {
+    const img = new Image();
+    img.onload = () => {
+      const scale = Math.min(1, 900 / Math.max(img.width, img.height));
+      const c = document.createElement("canvas");
+      c.width = Math.round(img.width*scale); c.height = Math.round(img.height*scale);
+      c.getContext("2d").drawImage(img, 0, 0, c.width, c.height);
+      cb(c.toDataURL("image/jpeg", .82));
+    };
+    img.onerror = () => toast("Couldn't read that image");
+    img.src = r.result;
+  };
+  r.readAsDataURL(file);
+}
+function pickPhotos(){ if($("ph-file")) $("ph-file").click(); }
+function regAddPhotos(files){
+  [...files].slice(0, 6 - uploadedPhotos.length).forEach(f => compressImage(f, url => { uploadedPhotos.push(url); paintUploads(); }));
+}
+function removeUpload(i){ uploadedPhotos.splice(i,1); paintUploads(); }
+function paintUploads(){
+  uploaded = uploadedPhotos.length;
+  if($("up-grid")) $("up-grid").innerHTML = uploadedPhotos.map((p,i)=>`<div class="up-th ${i===0?"main":""}"><img src="${p}" alt="">${i===0?'<span class="lead-tag">Main</span>':''}<button type="button" aria-label="Remove" onclick="removeUpload(${i})">✕</button></div>`).join("")
+    + (uploadedPhotos.length<6?`<button type="button" class="up-add" onclick="pickPhotos()" aria-label="Add photo">+</button>`:"");
+  if($("up-txt")) $("up-txt").textContent = uploaded ? uploaded+" photo"+(uploaded>1?"s":"")+" added — first is your main photo" : "";
+}
+function profileAddPhotos(files){
+  const me = user(DB.session); if(!me) return;
+  me.gallery = me.gallery || [];
+  [...files].slice(0, 6 - me.gallery.length).forEach(f => compressImage(f, url => {
+    me.gallery.push(url); me.photo = me.gallery[0]; me.photos = me.gallery.length; save(); render();
+  }));
+}
+function removeProfilePhoto(i){
+  const me = user(DB.session); if(!me || !me.gallery) return;
+  if(me.gallery.length<=1){ toast("Keep at least one photo"); return; }
+  me.gallery.splice(i,1); me.photo = me.gallery[0]; me.photos = me.gallery.length; save(); render();
+}
+function mainPhoto(i){
+  const me = user(DB.session); if(!me || !me.gallery) return;
+  me.gallery.unshift(me.gallery.splice(i,1)[0]); me.photo = me.gallery[0]; save(); toast("Main photo updated"); render();
+}
+function showProfile(uid){
+  const u = user(uid); if(!u) return;
+  closeLegal();
+  const gal = (u.gallery && u.gallery.length) ? u.gallery : (u.photo ? [u.photo] : []);
+  const g = grads[u.g ?? 0];
+  const d = document.createElement("div"); d.className = "legal-overlay"; d.id = "legal";
+  d.innerHTML = `<div class="legal-card" style="max-width:440px">
+    <div class="legal-head"><b style="font-size:15px">${esc(u.name)}, ${u.age}</b><button class="btn btn-ghost btn-sm" onclick="closeLegal()">✕ Close</button></div>
+    <div class="legal-body" style="padding:16px 18px 20px">
+      <div style="height:320px;position:relative;border-radius:16px;overflow:hidden;background:linear-gradient(135deg,${g[0]},${g[1]})">
+        ${gal[0]?`<img id="pf-main" src="${gal[0]}" alt="${esc(u.name)}" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" onerror="this.remove()">`:""}
+        <div style="position:absolute;inset:0;background:linear-gradient(180deg,transparent 55%,rgba(32,25,18,.8))"></div>
+        <div style="position:absolute;left:16px;bottom:12px;color:#fff;font:700 1.15rem 'Fraunces',Georgia,serif">${esc(u.name)}, ${u.age} <span class="vtick" title="Photo verified" style="font-size:.8rem">✓</span></div>
+      </div>
+      ${gal.length>1?`<div class="pf-thumbs">${gal.map((p,i)=>`<img class="pf-th ${i===0?"on":""}" src="${p}" alt="" onclick="const m=document.getElementById('pf-main'); if(m) m.src=this.src; this.parentNode.querySelectorAll('.pf-th').forEach(t=>t.classList.remove('on')); this.classList.add('on')">`).join("")}</div>`:""}
+      ${vBadges(u)}
+      <p style="margin:8px 0 0;font-size:14.5px;line-height:1.6;color:var(--text-2)">${esc(u.bio)}</p>
+      ${(u.interests&&u.interests.length)?`<div class="chips" style="margin-top:12px">${u.interests.map(x=>`<span class="pill static" style="height:28px;font-size:12.5px">${esc(x)}</span>`).join("")}</div>`:""}
+    </div></div>`;
+  d.onclick = e => { if(e.target === d) closeLegal(); };
+  document.body.appendChild(d);
+}
+function register(role){
+  const name=$("r-name").value.trim(), age=+$("r-age").value, email=$("r-email").value.trim(), pass=$("r-pass").value, bio=$("r-bio").value.trim();
+  const errs=[];
+  if(!name) errs.push("Name is required.");
+  if(!age || age<18) errs.push("You must be 18 or older.");
+  if(!/.+@.+\..+/.test(email) && !email.endsWith("@demo")) errs.push("Enter a valid email address.");
+  if(DB.users.some(x=>x.email && x.email.toLowerCase()===email.toLowerCase())) errs.push("That email already has an account — log in instead.");
+  if(pass.length<8) errs.push("Password needs at least 8 characters.");
+  if(!uploaded) errs.push("Add at least 1 photo.");
+  if(!$("r-terms") || !$("r-terms").checked) errs.push("Please confirm you're 18+ and accept the Terms, Privacy Policy, and Guidelines.");
+  const interests = role==="man" ? [...document.querySelectorAll("#chip-grid .pill.on")].map(b=>b.textContent) : undefined;
+  if(role==="man" && !interests.length) errs.push("Pick at least one interest.");
+  if(errs.length){ $("r-err").innerHTML = errs.map(e=>`<div class="err-msg">${e}</div>`).join(""); return; }
+  const u={id:"u"+(DB.users.length+1), role: role==="woman" ? "curator" : "funder", gender: role==="woman" ? "woman" : "man", seeks: role==="woman" ? "men" : "women", wishlist:[], name, age, email, bio: bio||"—", photos:uploadedPhotos.length, photo: uploadedPhotos[0]||undefined, gallery: uploadedPhotos.slice(), g:Math.floor(Math.random()*grads.length), interests, verify:{photo:true}, sub:false, trialStart: role==="woman" ? new Date().toISOString() : null};
+  DB.users.push(u); DB.session=u.id; save(); uploaded=0; uploadedPhotos=[];
+  toastNext("Welcome to WannaGo, "+name.split(" ")[0]);
+  go(role==="woman" ? "#/woman" : "#/browse");
+}
+
+/* 5 · Login */
+P.login = () => `
+<div class="narrow page-head" style="max-width:440px">
+  <span class="eyebrow">Welcome back</span>
+  <h1 style="font-size:2.4rem;margin:10px 0 6px">Log in</h1>
+  <div class="panel" style="margin-top:24px">
+    <label class="f">Email</label><input id="l-email" class="input" placeholder="you@example.com">
+    <label class="f">Password</label><input id="l-pass" class="input" type="password" placeholder="••••••••">
+    <div id="l-err"></div>
+    <button class="btn btn-primary btn-lg btn-block" style="margin-top:24px" onclick="login()">Log in</button>
+    <p class="small" style="text-align:center;margin-top:14px">New here? <a href="register.html">Create a profile</a></p>
+  </div>
+</div>`;
+function login(){
+  const u = DB.users.find(x=>x.email===$("l-email").value.trim().toLowerCase());
+  if(!u || !$("l-pass").value){ $("l-err").innerHTML = `<div class="err-msg">No account matches that email and password.</div>`; return; }
+  DB.session=u.id; save(); toastNext("Logged in as "+u.name);
+  go(u.role==="curator"?"#/woman":u.role==="funder"?"#/browse":"#/admin");
+}
+
+/* 6 · Woman dashboard */
+P.woman = () => {
+  const me = user(DB.session); if(!me || me.role!=="curator") return P.login();
+  if(mech()==="invite") return womanInviteView(me);
+  const mine = DB.posts.filter(p=>p.womanId===me.id);
+  return `
+<div class="container">
+  <div class="profile-head">
+    ${avatar(me,96,"ring")}
+    <div class="meta">
+      <span class="eyebrow">Your profile · live on every post</span>
+      <h2 style="margin:6px 0 4px">${esc(me.name)}, ${me.age}</h2>
+      <p class="sub" style="max-width:560px">${esc(me.bio)}</p>
+      <p class="small" style="margin-top:6px">${I.cam.replace('class="icon"','class="icon sm"')} ${me.photos} photo${me.photos>1?"s":""} · <a href="profile.html">Edit profile & photos</a></p>
+    </div>
+  </div>
+
+  <div class="duo" style="margin-top:12px">
+    <div class="panel">
+      <span class="eyebrow">New post</span>
+      <h3 style="margin:8px 0 2px">Post a dream date</h3>
+      ${pricingMode()==="subscription" && !me.sub ? (trialDaysLeft(me)>0
+        ? `<div class="notice" style="margin-bottom:4px">${I.spark.replace('class="icon"','class="icon sm" style="color:var(--terracotta);margin-top:2px"')} <span>Free trial — <b>${trialDaysLeft(me)} day${trialDaysLeft(me)!==1?"s":""} left</b>, then $${PRICING.subWomen}/month. <button class="btn btn-ghost btn-sm" style="margin-top:8px" onclick="mockSubscribe()">Subscribe $${PRICING.subWomen}/mo — instant in demo</button></span></div>`
+        : `<div class="notice" style="border-color:var(--warning);margin-bottom:4px">${I.wallet.replace('class="icon"','class="icon sm" style="color:var(--warning);margin-top:2px"')} <span>Your 30-day free trial has ended — subscribe to keep posting dates. <button class="btn btn-primary btn-sm" style="margin-top:8px" onclick="mockSubscribe()">Subscribe $${PRICING.subWomen}/mo — instant in demo</button></span></div>`) : ``}
+      <label class="f">Trending in New York <span style="color:var(--muted);font-weight:400">— the tables everyone's posting</span></label>
+      <div class="trend-grid">${VENUES.filter(v=>v.tags&&v.tags.length).slice(0,4).map(v=>`
+        <div class="trend-card" onclick='acPick("${v.id}")'>
+          <div class="tc-img"><img src="${v.photo}" alt="${esc(v.name)}" loading="lazy" onerror="this.remove()"><div class="tc-tags">${venueTag1(v)}</div></div>
+          <div class="tc-bd"><b>${esc(v.name)}</b><span class="small" style="font-size:11.5px">${esc((v.addr.split(",")[1]||"").trim())}</span></div>
+        </div>`).join("")}</div>
+      <label class="f">Venue <span style="color:var(--muted);font-weight:400">— tap a spot above, or search any venue</span></label>
+      <div class="ac-wrap">
+        <input id="w-venue" class="input" placeholder="Start typing a venue…" autocomplete="off" oninput="acSearch(this.value)">
+        <div id="ac"></div>
+      </div>
+      <div class="hint" id="w-venue-picked">Coordinates are stored with the post.</div>
+      <label class="f">The plan</label>
+      <textarea id="w-idea" class="input" placeholder="What does the perfect version of this evening look like?"></textarea>
+      <div class="grid-2">
+        <div><label class="f">Budget min (USD)</label><input id="w-min" class="input" type="number" placeholder="150"></div>
+        <div><label class="f">Budget max (USD)</label><input id="w-max" class="input" type="number" placeholder="300"></div>
+      </div>
+      <label class="f">When could this happen? <span style="color:var(--muted);font-weight:400">— pick 2–5 evenings, up to 3 months out; he chooses from these</span></label>
+      <div id="win-cal">${winGridHTML()}</div>
+      <div id="win-rows">${winRowsHTML()}</div>
+      <div class="hint">Your post expires after the last evening passes.</div>
+      <div id="w-err"></div>
+      <button class="btn btn-primary btn-lg btn-block" style="margin-top:24px" onclick="createPost()">${I.spark} Post this date</button>
+    </div>
+
+    <div>
+      <span class="eyebrow">Your dates</span>
+      <h3 style="margin:8px 0 16px">${mine.length ? mine.length + " posted" : "Nothing posted yet"}</h3>
+      ${mine.length ? mine.map(p=>{
+        const m = DB.matches.find(x=>x.postId===p.id);
+        const badge = p.status==="open" ? '<span class="badge b-info">Open</span>'
+          : p.status==="funded" ? '<span class="badge b-warning">Funded — your call</span>'
+          : '<span class="badge b-gold">Matched</span>';
+        return `<div class="card hoverable" style="margin-bottom:14px" onclick="go('${m?("#/match/"+m.id):("#/post/"+p.id)}')">
+          <div style="display:flex;justify-content:space-between;gap:12px;align-items:flex-start">
+            <div><div style="display:flex;gap:10px;align-items:center;font-weight:500">${p.venue.photo?`<img class="venue-thumb" src="${p.venue.photo}" alt="" loading="lazy" onerror="if(!this.dataset.f){this.dataset.f=1;this.src='https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=1000&q=70'}else{this.remove()}">`:""}${I.pin.replace('class="icon"','class="icon sm" style="color:var(--pink)"')} ${esc(p.venue.name)}</div>
+            <p class="small" style="margin-top:4px">${esc(p.idea.slice(0,72))}…</p></div>${badge}
+          </div>
+          <div style="display:flex;justify-content:space-between;margin-top:14px;padding-top:12px;border-top:1px solid var(--border)">
+            <span class="money" style="font-size:14.5px">${fmt(p.min)} – ${fmt(p.max)}</span>
+            <span class="small">${(p.windows||[]).length?(p.windows.length+" evening"+(p.windows.length!==1?"s":"")+" · "):""}${ago(p.created)}</span>
+          </div></div>`;
+      }).join("") : `<div class="empty"><h3>Your first date starts here</h3>Post a venue, a plan, and a budget — men see it instantly.</div>`}
+    </div>
+  </div>
+</div>`;
+};
+
+let pickedVenue = null;
+function acSearch(q){
+  q=q.trim().toLowerCase(); pickedVenue=null;
+  $("ac").innerHTML = !q ? "" : `<div class="ac-list">${
+    VENUES.filter(v=>v.name.toLowerCase().includes(q)||v.addr.toLowerCase().includes(q)).slice(0,4)
+    .map(v=>`<div class="ac-item" onclick='acPick("${v.id}")'>${v.photo?`<img class="venue-thumb" style="width:34px;height:34px" src="${v.photo}" alt="" loading="lazy" onerror="if(!this.dataset.f){this.dataset.f=1;this.src='https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=1000&q=70'}else{this.remove()}">`:I.pin.replace('class="icon"','class="icon sm" style="color:var(--pink)"')}
+      <span>${esc(v.name)}<span class="addr">${esc(v.addr)}</span></span>
+      ${v.provider?`<span class="prov">${v.provider}</span>`:""}</div>`).join("") || `<div class="ac-item" style="cursor:default;color:var(--muted)">No venues found</div>`
+  }</div>`;
+}
+function acPick(id){
+  pickedVenue = VENUES.find(v=>v.id===id);
+  $("w-venue").value = pickedVenue.name; $("ac").innerHTML="";
+  $("w-venue-picked").innerHTML = `${I.check} ${esc(pickedVenue.addr)} · <span class="mono">${pickedVenue.lat.toFixed(4)}, ${pickedVenue.lng.toFixed(4)}</span>`;
+}
+let draftWins = {};
+let calShift = 0;
+const CAL_HORIZON = 92;
+const dKey = d => d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
+function mkWinDate(key, slot){
+  const sp = SLOT_PRESETS[slot], q = key.split("-").map(Number);
+  const a = new Date(q[0], q[1]-1, q[2], sp.from[0], sp.from[1], 0, 0);
+  const b = new Date(q[0], q[1]-1, q[2], sp.to[0], sp.to[1], 0, 0);
+  return {id:"w"+key+"s"+slot, start:a.toISOString(), end:b.toISOString(), flex:!!sp.flex};
+}
+function winGridHTML(){
+  const today = new Date(); today.setHours(0,0,0,0);
+  const maxD = new Date(today.getTime() + CAL_HORIZON*DAY);
+  const base = new Date(today.getFullYear(), today.getMonth()+calShift, 1);
+  const y = base.getFullYear(), mo = base.getMonth();
+  const nextOff = new Date(y, mo+1, 1) > maxD;
+  let out = `<div class="cal-nav">
+    <button type="button" class="cal-btn" onclick="calMove(-1)" ${calShift<=0?"disabled":""}>&#8249;</button>
+    <span class="cal-title">${base.toLocaleDateString("en-US",{month:"long",year:"numeric"})}</span>
+    <button type="button" class="cal-btn" onclick="calMove(1)" ${nextOff?"disabled":""}>&#8250;</button>
+  </div><div class="win-grid">`;
+  ["S","M","T","W","T","F","S"].forEach(l => out += `<span class="dh">${l}</span>`);
+  for(let i=0;i<new Date(y,mo,1).getDay();i++) out += `<span></span>`;
+  const days = new Date(y, mo+1, 0).getDate();
+  for(let d=1; d<=days; d++){
+    const dt = new Date(y, mo, d), key = dKey(dt);
+    const off = dt <= today || dt > maxD;
+    out += `<span class="d ${draftWins[key]!=null?"sel":""} ${off?"off":""}"${off?"":` onclick="toggleWin('${key}')"`}>${d}</span>`;
+  }
+  return out + `</div>`;
+}
+function winRowsHTML(){
+  return Object.keys(draftWins).sort().map(key=>{
+    const q = key.split("-").map(Number), d = new Date(q[0], q[1]-1, q[2]);
+    return `
+    <div class="win-row">
+      <span style="display:flex;gap:8px;align-items:center;font-weight:500;font-size:14px">${I.cal.replace('class="icon"','class="icon sm" style="color:var(--pink)"')} ${d.toLocaleDateString("en-US",{weekday:"short",month:"short",day:"numeric"})}</span>
+      <select class="win-sel" onchange="setWinSlot('${key}',this.value)">${SLOT_PRESETS.map((sp,i)=>`<option value="${i}" ${draftWins[key]===i?"selected":""}>${sp.label}</option>`).join("")}</select>
+    </div>`;
+  }).join("");
+}
+function paintWins(){ if($("win-cal")){ $("win-cal").innerHTML=winGridHTML(); $("win-rows").innerHTML=winRowsHTML(); } }
+function calMove(n){ calShift = Math.max(0, calShift + n); paintWins(); }
+function toggleWin(key){
+  if(draftWins[key]!=null) delete draftWins[key];
+  else { if(Object.keys(draftWins).length>=5){ toast("Five evenings max"); return; } draftWins[key]=1; }
+  paintWins();
+}
+function setWinSlot(key,v){ draftWins[key]=+v; }
+function createPost(){
+  const idea=$("w-idea").value.trim(), min=+$("w-min").value, max=+$("w-max").value, errs=[];
+  if(!pickedVenue) errs.push("Pick a venue from the search results.");
+  if(!idea) errs.push("Describe the plan.");
+  if(!min||!max||min<=0||max<min) errs.push("Budget max must be at least the min.");
+  const meW = user(DB.session);
+  if(pricingMode()==="subscription" && meW && !meW.sub && trialDaysLeft(meW)<=0) errs.push("Your 30-day free trial has ended — subscribe for $" + PRICING.subWomen + "/month to post new dates.");
+  const wKeys = Object.keys(draftWins).sort();
+  if(!wKeys.length) errs.push("Pick at least one evening you're free.");
+  if(errs.length){ $("w-err").innerHTML=errs.map(e=>`<div class="err-msg">${e}</div>`).join(""); return; }
+  const windows = wKeys.map(k=>mkWinDate(k, draftWins[k]));
+  DB.posts.unshift({id:"p"+(DB.posts.length+1), womanId:DB.session, venue:pickedVenue, idea, min, max, windows, status:"open", fundedBy:null, amount:null, created:new Date().toISOString()});
+  save(); pickedVenue=null; draftWins={}; calShift=0; toast("Your date is live"); render();
+}
+/* 7 · Man browse feed */
+P.browse = () => {
+  const me = user(DB.session); if(!me || me.role!=="funder") return P.login();
+  if(mech()==="invite") return browseInviteView(me);
+  const open = DB.posts.filter(p=>p.status==="open" && matchOk(me, user(p.womanId)));
+  return `
+<div class="container">
+  <div class="profile-head">
+    ${avatar(me,96,"ring-p")}
+    <div class="meta">
+      <span class="eyebrow purple">Your profile · shown when you fund</span>
+      <h2 style="margin:6px 0 4px">${esc(me.name)}, ${me.age}</h2>
+      <p class="sub" style="max-width:560px">${esc(me.bio)}</p>
+      <div class="chips" style="margin-top:10px">${(me.interests||[]).map(i=>`<span class="pill static" style="height:28px;font-size:12.5px">${esc(i)}</span>`).join("")}</div>
+      <p class="small" style="margin-top:10px"><a href="profile.html">Edit profile & photos</a></p>
+    </div>
+  </div>
+  <div style="display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:8px">
+    <div><span class="eyebrow">Tonight's board</span><h2 style="margin-top:6px">${open.length} date${open.length!==1?"s":""} waiting to be funded</h2></div>
+    <span class="small">Newest first</span>
+  </div>
+  <div class="feed">
+  ${open.length ? open.map(p=>{
+    const w = user(p.womanId);
+    return `<article class="date-card">
+      ${photoBlock(w)}
+      <div class="bd">
+        <div class="venue">${p.venue.photo?`<img class="venue-thumb" src="${p.venue.photo}" alt="" loading="lazy" onerror="if(!this.dataset.f){this.dataset.f=1;this.src='https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=1000&q=70'}else{this.remove()}">`:""}${I.pin.replace('class="icon"','class="icon sm" style="color:var(--pink)"')} ${esc(p.venue.name)} <span class="small" style="font-weight:400">· ${esc(p.venue.addr.split(",").slice(-2)[0].trim())}</span></div>
+        ${(p.venue.tags&&p.venue.tags.length)?`<div class="vtags-row">${venueTags(p.venue,2)}</div>`:""}
+        <p class="idea">"${esc(p.idea)}"</p>
+        <p class="small" style="display:flex;gap:6px;align-items:center">${I.cal.replace('class="icon"','class="icon sm" style="color:var(--pink)"')} ${(p.windows||[]).length} evening${(p.windows||[]).length!==1?"s":""} offered · next ${(p.windows||[])[0]?wDay(p.windows[0]):"TBD"}</p>
+        <p class="small">${esc(w.bio.slice(0,80))}…</p>
+        <div class="foot">
+          <span class="money">${fmt(p.min)} – ${fmt(p.max)}</span>
+          <button class="btn btn-primary btn-sm" onclick="go('#/fund/${p.id}')">Fund this date</button>
+        </div>
+      </div></article>`;
+  }).join("") : `<div class="empty" style="grid-column:1/-1"><h3>No open dates right now</h3>New posts land here the moment they're published.</div>`}
+  </div>
+</div>`;
+};
+
+/* 8 · Fund a date */
+P.fund = (postId) => {
+  const me = user(DB.session); if(!me || me.role!=="funder") return P.login();
+  const p = DB.posts.find(x=>x.id===postId); if(!p) return P.browse();
+  const w = user(p.womanId);
+  return `
+<div class="container page-head">
+  <span class="eyebrow purple">Fund a date</span>
+  <h1 style="font-size:clamp(2rem,3.6vw,2.8rem);margin:10px 0 6px">This is exactly what ${gShe(w)}'ll see</h1>
+  <p class="sub" style="max-width:620px">Both profiles, side by side — the same view ${esc(w.name.split(" ")[0])} gets when your funding lands on ${gHer(w)} post.</p>
+
+  <div class="duo" style="margin-top:30px">
+    <div class="profile-card her-side">
+      ${photoBlock(w)}
+      <div class="bd">
+        <span class="eyebrow">${w.gender==="man"?"His":"Her"} dream date</span>
+        <div style="display:flex;gap:8px;align-items:center;font-weight:500;margin:10px 0 4px">${I.pin.replace('class="icon"','class="icon sm" style="color:var(--pink)"')} ${esc(p.venue.name)}</div>
+        <p class="small" style="margin-bottom:10px">${esc(p.venue.addr)}</p>
+        ${venueBanner(p.venue, 150)}
+        ${(p.venue.tags&&p.venue.tags.length)?`<div class="vtags-row" style="margin-bottom:12px">${venueTags(p.venue,3)}</div>`:""}
+        ${p.venue.perk?`<p class="small" style="margin:-4px 0 10px;color:var(--success);font-weight:500">Partner perk: ${esc(p.venue.perk)}</p>`:""}
+        <p class="sub" style="font-size:15px">"${esc(p.idea)}"</p>
+        <dl class="kv" style="margin-top:16px">
+          <div><dt>Budget range</dt><dd class="money">${fmt(p.min)} – ${fmt(p.max)}</dd></div>
+          <div><dt>Posted</dt><dd>${ago(p.created)}</dd></div>
+        </dl>
+        <p class="sub" style="font-size:14.5px;margin-top:14px;border-top:1px solid var(--border);padding-top:14px">${esc(w.bio)}</p>
+      </div>
+    </div>
+
+    <div>
+      <div class="profile-card him-side">
+        ${photoBlock(me)}
+        <div class="bd">
+          <span class="eyebrow purple">You — as ${gShe(w)}'ll see you</span>
+          ${vBadges(me)}
+          <p class="sub" style="font-size:15px;margin:4px 0 12px">${esc(me.bio)}</p>
+          <div class="chips">${(me.interests||[]).map(i=>`<span class="pill static" style="height:28px;font-size:12.5px">${esc(i)}</span>`).join("")}</div>
+        </div>
+      </div>
+      <div class="panel" style="margin-top:20px">
+        ${pricingMode()==="membership" && !me.member
+          ? `<div class="notice" style="border-color:var(--warning);margin-bottom:14px">${I.wallet.replace('class="icon"','class="icon sm" style="color:var(--warning);margin-top:2px"')} <span>WannaGo membership — one-time $${PRICING.memberFee} — is required to fund evenings. No per-date fees after that. <button class="btn btn-primary btn-sm" style="margin-top:8px" onclick="mockJoin()">Join for $${PRICING.memberFee} — instant in demo</button></span></div>`
+          : pricingMode()==="subscription" && !me.sub
+          ? `<div class="notice" style="border-color:var(--warning);margin-bottom:14px">${I.wallet.replace('class="icon"','class="icon sm" style="color:var(--warning);margin-top:2px"')} <span>WannaGo for men is $${PRICING.subMen}/month — fund unlimited evenings, no per-date fees. <button class="btn btn-primary btn-sm" style="margin-top:8px" onclick="mockSubscribe()">Subscribe $${PRICING.subMen}/mo — instant in demo</button></span></div>`
+          : ``}
+        ${pricingMode()==="subscription"
+          ? `<div class="notice">${I.shield.replace('class="icon"','class="icon sm" style="color:var(--success);margin-top:2px"')} You're photo verified — standard dating-app verification on this plan. No background checks.</div>`
+          : fullyVerified(me)
+          ? `<div class="notice">${I.shield.replace('class="icon"','class="icon sm" style="color:var(--success);margin-top:2px"')} You're fully verified — photo, ID, and background check. Your date sees these badges with your request.</div>`
+          : `<div class="notice" style="border-color:var(--warning)">${I.shield.replace('class="icon"','class="icon sm" style="color:var(--warning);margin-top:2px"')} <span>Only verified men can fund dates. <button class="btn btn-primary btn-sm" style="margin-top:8px" onclick="mockVerify()">Verify ID + background — instant in demo</button></span></div>`}
+        <label class="f">Which evenings work for you? <span style="color:var(--muted);font-weight:400">— ${gShe(w)} locks the final time</span></label>
+        <div id="f-wins">${fundWinHTML(p)}</div>
+        <label class="f">Evening budget <span style="color:var(--muted);font-weight:400">— within ${gHer(w)} range, spent at the venue</span></label>
+        <input id="f-amt" class="input" type="number" min="${p.min}" max="${p.max}" placeholder="${p.min} – ${p.max}" oninput="feePreview()">
+        <div id="f-fee" class="small" style="margin-top:8px">${feeLineHTML(0)}</div>
+        <div id="f-err"></div>
+        <div class="notice" style="margin-top:16px">${I.shield.replace('class="icon"','class="icon sm" style="color:var(--pink);margin-top:2px"')} Held by Stripe as your show-up hold — you pay dinner at the table like always. If ${gShe(w)} passes, the hold melts and you're never charged.</div>
+        <button class="btn btn-primary btn-lg btn-block" style="margin-top:18px" onclick="fund('${p.id}')">${I.send} Fund &amp; request the match</button>
+        <button class="btn btn-ghost btn-block" style="margin-top:8px" onclick="go('#/browse')">Back to browsing</button>
+      </div>
+    </div>
+  </div>
+</div>`;
+};
+let fundPicks = new Set();
+function fundWinHTML(p){
+  fundPicks = new Set([...fundPicks].filter(id=>(p.windows||[]).some(w=>w.id===id)));
+  return (p.windows||[]).map(w=>`
+    <div class="win-pick ${fundPicks.has(w.id)?"on":""}" onclick="toggleFundWin('${p.id}','${w.id}')">
+      <span class="box">${fundPicks.has(w.id)?"✓":""}</span>
+      <div style="flex:1"><div style="font-weight:500;font-size:14px">${wDay(w)}</div><div class="small">${wTime(w)}</div></div>
+      ${fundPicks.has(w.id)?'<span class="small" style="color:var(--success);font-weight:500">I can make this</span>':""}
+    </div>`).join("");
+}
+function toggleFundWin(pid, wid){
+  fundPicks.has(wid) ? fundPicks.delete(wid) : fundPicks.add(wid);
+  const p = DB.posts.find(x=>x.id===pid);
+  if($("f-wins")) $("f-wins").innerHTML = fundWinHTML(p);
+}
+function fund(postId){
+  const p = DB.posts.find(x=>x.id===postId), amt=+$("f-amt").value;
+  const me = user(DB.session);
+  const errs=[];
+  if(pricingMode()!=="subscription" && !fullyVerified(me)) errs.push("Complete ID and background verification to fund dates.");
+  if(pricingMode()==="membership" && !me.member) errs.push("A WannaGo membership ($" + PRICING.memberFee + " one-time) is required to fund evenings.");
+  if(pricingMode()==="subscription" && !me.sub) errs.push("An active WannaGo subscription ($" + PRICING.subMen + "/month) is required to fund evenings.");
+  if((p.windows||[]).length && !fundPicks.size) errs.push("Select at least one evening you can make.");
+  if(!amt || amt<p.min || amt>p.max) errs.push(`Enter an amount between ${fmt(p.min)} and ${fmt(p.max)}.`);
+  if(errs.length){ $("f-err").innerHTML=errs.map(e=>`<div class="err-msg">${e}</div>`).join(""); return; }
+  p.status="funded"; p.fundedBy=DB.session; p.amount=amt; p.fee=calcFee(amt); p.picks=[...fundPicks]; fundPicks=new Set(); save();
+  toastNext("Funded — waiting on " + gHer(user(p.womanId)) + " yes");
+  go("#/browse");
+}
+
+/* 9 · Post detail — woman's view */
+P.post = (postId) => {
+  const me = user(DB.session); if(!me || me.role!=="curator") return P.login();
+  const p = DB.posts.find(x=>x.id===postId); if(!p) return P.woman();
+  const m = p.fundedBy ? user(p.fundedBy) : null;
+  return `
+<div class="container page-head" style="max-width:880px">
+  <a class="small" href="woman-dashboard.html" style="color:var(--muted)">← All your dates</a>
+  <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:16px;margin-top:14px;flex-wrap:wrap">
+    <div>
+      <span class="eyebrow">Your post</span>
+      <h1 style="font-size:clamp(1.9rem,3.4vw,2.6rem);margin:8px 0 4px">${esc(p.venue.name)}</h1>
+      <p class="small">${esc(p.venue.addr)} · posted ${ago(p.created)}</p>
+    </div>
+    ${p.status==="open"?'<span class="badge b-info">Open</span>':p.status==="funded"?'<span class="badge b-warning">Funded — your call</span>':'<span class="badge b-gold">Matched</span>'}
+  </div>
+  <div class="card" style="margin-top:20px">
+    ${venueBanner(p.venue, 220)}
+    <p class="sub" style="font-size:16px">"${esc(p.idea)}"</p>
+    <dl class="kv" style="margin-top:18px">
+      <div><dt>Budget range</dt><dd class="money">${fmt(p.min)} – ${fmt(p.max)}</dd></div>
+      <div><dt>Coordinates</dt><dd class="mono" style="font-size:13.5px;color:var(--text-2)">${p.venue.lat.toFixed(4)}, ${p.venue.lng.toFixed(4)}</dd></div>
+    </dl>
+  </div>
+
+  ${!m ? `<div class="empty" style="margin-top:24px"><h3>No funding yet</h3>When a man funds this date, his full profile appears here for your decision.</div>`
+  : `<div style="margin-top:36px">
+      <span class="eyebrow purple">${m.gender==="man"?"He":"She"} funded your date — ${fmt(p.amount)}</span>
+      <h2 style="margin:8px 0 18px">Meet ${esc(m.name.split(" ")[0])}. Your call.</h2>
+      <div class="profile-card him-side" style="max-width:560px">
+        ${photoBlock(m)}
+        <div class="bd">
+          ${vBadges(m)}
+          <p class="sub" style="font-size:15px;margin-bottom:12px">${esc(m.bio)}</p>
+          <dl class="kv"><div><dt>Evening budget</dt><dd class="money">${fmt(p.amount)}</dd></div><div><dt>Age</dt><dd>${m.age}</dd></div></dl>
+          <dt style="font:500 11px 'Courier Prime';letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin:16px 0 8px">${m.gender==="man"?"His":"Her"} interests</dt>
+          <div class="chips">${(m.interests||[]).map(i=>`<span class="pill static" style="height:28px;font-size:12.5px">${esc(i)}</span>`).join("")}</div>
+          <dt style="font:500 11px 'Courier Prime';letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin:16px 0 8px">${m.gender==="man"?"He":"She"} can make ${manWins(p).length} of your evenings — lock the time</dt>
+          <div id="pd-wins">${pdWinHTML(p)}</div>
+          <div style="display:flex;gap:12px;margin-top:22px">
+            <button class="btn btn-primary" style="flex:1" onclick="approve('${p.id}')">${I.heartF} Approve for ${finalWin(p)?wDay(finalWin(p)):"the match"}</button>
+            <button class="btn btn-danger" onclick="decline('${p.id}')">Pass</button>
+          </div>
+        </div>
+      </div>
+    </div>`}
+</div>`;
+};
+let finalPick = null;
+function manWins(p){ return (p.windows||[]).filter(w=>!p.picks || !p.picks.length || p.picks.includes(w.id)); }
+function finalWin(p){ const ws=manWins(p); return ws.find(w=>w.id===finalPick) || ws[0] || null; }
+function pdWinHTML(p){
+  const sel = finalWin(p);
+  return manWins(p).map(w=>`
+    <div class="win-pick pick-r ${sel&&sel.id===w.id?"on":""}" onclick="setFinal('${w.id}')">
+      <span class="box"></span>
+      <div style="flex:1"><div style="font-weight:500;font-size:14px">${wDay(w)}</div><div class="small">${wTime(w)}</div></div>
+    </div>`).join("");
+}
+function setFinal(wid){ finalPick = wid; render(); }
+/* ═══════════ INVITATION MECHANIC (he picks places, invites from her list) ═══════════ */
+const mech = () => DB.mech || "invite";
+function setMech(m){ DB.mech = m; save(); toast(m==="invite" ? "Mechanic: invitations" : "Mechanic: date posts"); render(); }
+const overlapV = (a,b) => (a.wishlist||[]).filter(v => (b.wishlist||[]).includes(v));
+function wishToggle(vid){
+  const me = user(DB.session); if(!me) return;
+  me.wishlist = me.wishlist || [];
+  const i = me.wishlist.indexOf(vid);
+  if(i>-1) me.wishlist.splice(i,1); else me.wishlist.push(vid);
+  save(); render();
+}
+function wishGrid(me, note){
+  return `<div class="trend-grid">${VENUES.map(v=>`
+    <div class="trend-card" style="cursor:default">
+      <div class="tc-img"><img src="${v.photo}" alt="${esc(v.name)}" loading="lazy" onerror="this.remove()">
+        <button class="wish-btn ${(me.wishlist||[]).includes(v.id)?"on":""}" onclick="wishToggle('${v.id}')" aria-label="Want to go">${I.heartF.replace('class="icon"','class="icon sm"')}</button>
+        <div class="tc-tags">${venueTag1(v)}</div></div>
+      <div class="tc-bd"><b>${esc(v.name)}</b><span class="small" style="font-size:11.5px">${esc((v.addr.split(",")[1]||"").trim())}</span></div>
+    </div>`).join("")}</div>
+  <div class="hint" style="margin-top:10px">${note}</div>`;
+}
+let inviteFor = null;
+let acceptWinSel = {};
+function invitesSentThisWeek(uid){
+  const wk = Date.now() - 7*DAY;
+  return DB.invites.filter(i => i.manId===uid && new Date(i.at).getTime() > wk).length;
+}
+function inviteOpen(wid){ inviteFor = (inviteFor===wid ? null : wid); render(); }
+function inviteSend(womanId){
+  const me = user(DB.session), w = user(womanId);
+  const errs = [];
+  if(pricingMode()!=="subscription" && !fullyVerified(me)) errs.push("Complete ID and background verification to send invitations.");
+  if(pricingMode()==="membership" && !me.member) errs.push("A WannaGo membership ($" + PRICING.memberFee + " one-time) is required to invite.");
+  if(pricingMode()==="subscription" && !me.sub) errs.push("An active WannaGo subscription ($" + PRICING.subMen + "/month) is required to invite.");
+  if(invitesSentThisWeek(me.id) >= 3) errs.push("You have used all 3 invitations this week — quality over quantity.");
+  const vid = $("inv-venue") ? $("inv-venue").value : null;
+  if(!vid || !overlapV(me,w).includes(vid)) errs.push("Pick a place from your shared list.");
+  const amt = PRICING.hold;
+  if(errs.length){ if($("inv-err")) $("inv-err").innerHTML = errs.map(e=>`<div class="err-msg">${e}</div>`).join(""); return; }
+  DB.invites.push({id:"i"+(DB.invites.length+1), manId:me.id, womanId, venueId:vid, amount:amt, fee:calcFee(amt),
+    msg:($("inv-msg")?$("inv-msg").value.trim():""), windows:[mkWin(3,1), mkWin(5,2), mkWin(9,2)], status:"pending", at:new Date().toISOString()});
+  save(); inviteFor = null;
+  toast("Invitation sent — table on hold"); render();
+}
+function acceptWinPick(iid, wid){ acceptWinSel[iid] = wid; render(); }
+function inviteAccept(iid){
+  const i = DB.invites.find(x=>x.id===iid); if(!i || i.status!=="pending") return;
+  const v = VENUES.find(x=>x.id===i.venueId);
+  const w = i.windows.find(x=>x.id===acceptWinSel[iid]) || i.windows[0];
+  const d = new Date(w.start); if(w.flex) d.setHours(19,30,0,0);
+  const post = {id:"p"+(DB.posts.length+1), womanId:i.womanId, venue:JSON.parse(JSON.stringify(v)), idea:"An evening at "+v.name+" — his invitation, her yes.", min:i.amount, max:i.amount, windows:i.windows, picks:i.windows.map(x=>x.id), status:"matched", fundedBy:i.manId, amount:i.amount, fee:i.fee, created:i.at};
+  DB.posts.push(post);
+  const m = {id:"m"+(DB.matches.length+1), postId:post.id, womanId:i.womanId, manId:i.manId, when:d.toISOString(), checkin:{w:false,m:false}, at:new Date().toISOString()};
+  DB.matches.push(m); i.status = "accepted"; save();
+  go("#/match/"+m.id);
+}
+function invitePass(iid){
+  const i = DB.invites.find(x=>x.id===iid); if(!i) return;
+  i.status = "passed"; save();
+  toast("Passed — he is refunded in full"); render();
+}
+function upcomingHTML(me){
+  const mine = DB.matches.filter(m => m.womanId===me.id || m.manId===me.id);
+  if(!mine.length) return "";
+  return `<h2 style="font-size:1.5rem;margin:34px 0 8px;font-family:'Fraunces',Georgia,serif">Your upcoming nights</h2>
+  ${mine.map(m=>{
+    const p = DB.posts.find(x=>x.id===m.postId);
+    const other = user(m.womanId===me.id ? m.manId : m.womanId);
+    const done = m.checkin && m.checkin.w && m.checkin.m;
+    return `<div class="trend-row" style="cursor:pointer" onclick="go('#/match/${m.id}')">
+      ${avatar(other,44)}
+      <div style="flex:1;min-width:0"><div style="font-weight:500">${esc(p.venue.name)} with ${esc(other.name.split(" ")[0])}</div>
+      <div class="small">${m.when ? wWhen(m.when) : "Time to be locked"}</div></div>
+      <span class="${done?"vpill":"badge b-gold"}">${done?"✓ Both checked in":"View ticket"}</span>
+    </div>`;}).join("")}`;
+}
+function womanInviteView(me){
+  const pend = DB.invites.filter(i=>i.womanId===me.id && i.status==="pending");
+  const invCards = pend.map(i=>{
+    const man = user(i.manId), v = VENUES.find(x=>x.id===i.venueId);
+    const sel = acceptWinSel[i.id] || i.windows[0].id;
+    return `<div class="card" style="margin-top:16px;text-align:left">
+      <div style="display:flex;gap:14px;align-items:center;cursor:pointer" onclick="showProfile('${man.id}')">${avatar(man,56)}<div><b style="font-size:1.05rem">${esc(man.name)}, ${man.age}</b>${vBadges(man)}<span class="small" style="display:block;color:var(--terracotta);font-weight:500;margin-top:2px">View profile & photos ${I.chev}</span></div></div>
+      <p class="sub" style="margin:12px 0;font-size:15px">"${esc(i.msg || ("Saw "+v.name+" is on your list too — would you like to join me?"))}"</p>
+      ${venueBanner(v, 130)}
+      <p class="small" style="margin:2px 0 10px;display:flex;gap:6px;align-items:center">${I.shield.replace('class="icon"','class="icon sm" style="color:var(--success)"')} He's committed to the night — dinner's on him.</p>
+      <dt style="font:500 11px 'Courier Prime';letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin:14px 0 6px">Pick the evening</dt>
+      ${i.windows.map(w=>`<div class="win-pick pick-r ${sel===w.id?"on":""}" onclick="acceptWinPick('${i.id}','${w.id}')"><span class="box"></span><div style="flex:1"><div style="font-weight:500;font-size:14px">${wDay(w)}</div><div class="small">${wTime(w)}</div></div></div>`).join("")}
+      <div style="display:flex;gap:10px;margin-top:16px">
+        <button class="btn btn-primary" style="flex:1" onclick="inviteAccept('${i.id}')">${I.heartF} I'd love to go</button>
+        <button class="btn btn-ghost" onclick="invitePass('${i.id}')">Pass</button>
+      </div></div>`;
+  }).join("");
+  return `
+<div class="container page-head" style="max-width:680px">
+  <span class="eyebrow">${I.heart.replace('class="icon"','class="icon sm" style="vertical-align:-3px;color:var(--pink)"')} Hi ${esc(me.name.split(" ")[0])}</span>
+  <h1 style="font-size:2.2rem;margin:10px 0 6px">Invitations</h1>
+  <p class="sub">Men can only invite you to places already on your list. Your list stays private.</p>
+  ${pricingMode()==="subscription" && !me.sub ? (trialDaysLeft(me)>0
+    ? `<div class="notice" style="margin-top:14px;text-align:left">${I.spark.replace('class="icon"','class="icon sm" style="color:var(--terracotta);margin-top:2px"')} <span>Free trial — <b>${trialDaysLeft(me)} day${trialDaysLeft(me)!==1?"s":""} left</b>, then $${PRICING.subWomen}/month. <button class="btn btn-ghost btn-sm" style="margin-top:8px" onclick="mockSubscribe()">Subscribe $${PRICING.subWomen}/mo — instant in demo</button></span></div>`
+    : `<div class="notice" style="border-color:var(--warning);margin-top:14px;text-align:left">${I.wallet.replace('class="icon"','class="icon sm" style="color:var(--warning);margin-top:2px"')} <span>Your 30-day free trial has ended — subscribe to keep receiving invitations. <button class="btn btn-primary btn-sm" style="margin-top:8px" onclick="mockSubscribe()">Subscribe $${PRICING.subWomen}/mo — instant in demo</button></span></div>`) : ``}
+  ${pend.length ? invCards : `<div class="empty" style="margin-top:16px"><h3>No invitations yet</h3>Heart more places below — invitations can only come from your list.</div>`}
+  ${upcomingHTML(me)}
+  <h2 style="font-size:1.5rem;margin:34px 0 4px;font-family:'Fraunces',Georgia,serif">Where do you want to go?</h2>
+  <p class="sub" style="margin-bottom:14px">Trending in New York — heart the places you would say yes to.</p>
+  ${wishGrid(me, "Your list is private. Men only see a place if it is on both of your lists.")}
+</div>`;
+}
+function browseInviteView(me){
+  const left = 3 - invitesSentThisWeek(me.id);
+  const women = DB.users.filter(u=>u.role==="curator" && overlapV(me,u).length && !DB.invites.some(i=>i.manId===me.id && i.womanId===u.id && i.status==="passed"));
+  const cards = women.map(w=>{
+    const ov = overlapV(me,w);
+    const already = DB.invites.some(i=>i.manId===me.id && i.womanId===w.id && i.status==="pending");
+    const matched = DB.matches.find(mm=>mm.manId===me.id && mm.womanId===w.id);
+    return `<div class="date-card">
+      ${photoBlock(w)}
+      <div class="bd">
+        <div class="vtags-row" style="margin-bottom:4px">${ov.map(vid=>{const v=VENUES.find(x=>x.id===vid);return `<span class="vtag mine">${I.heartF.replace('class="icon"','class="icon sm" style="width:11px;height:11px;vertical-align:-1px"')} ${esc(v.name)}</span>`;}).join("")}</div>
+        <p class="small" style="margin-bottom:6px">${ov.length} place${ov.length!==1?"s":""} you both want to try</p>
+        <p class="small">${esc(w.bio.slice(0,80))}…</p>
+        <div class="foot">
+          <span class="small" style="cursor:pointer;color:var(--terracotta);font-weight:500" onclick="showProfile('${w.id}')">${esc(w.name.split(" ")[0])}, ${w.age} — profile ${I.chev.replace('class="icon"','class="icon sm" style="width:12px;height:12px;vertical-align:-2px"')}</span>
+          ${matched ? `<button class="btn btn-ghost btn-sm" onclick="go('#/match/${matched.id}')">It's a date — ticket</button>`
+            : already ? `<span class="small" style="color:var(--success);font-weight:500">Invitation pending</span>`
+            : `<button class="btn btn-primary btn-sm" onclick="inviteOpen('${w.id}')">${inviteFor===w.id?"Close":"Invite"}</button>`}
+        </div>
+        ${inviteFor===w.id ? `
+        <div style="border-top:1px dashed var(--border-strong);margin-top:12px;padding-top:12px">
+          <label class="f" style="margin-top:0">Where — from your shared list</label>
+          <select id="inv-venue" class="input">${ov.map(vid=>{const v=VENUES.find(x=>x.id===vid);return `<option value="${vid}">${esc(v.name)}</option>`;}).join("")}</select>
+          <div class="notice" style="margin-top:14px">${I.shield.replace('class="icon"','class="icon sm" style="color:var(--success);margin-top:2px"')} <span><b>Show-up hold: $${PRICING.hold}</b> — held on your card, never charged if the night happens. Cancel free up to 24h before. You pay dinner at the table like always; WannaGo never touches the meal.${pricingMode()==="take"?` A ${fmt(calcFee(PRICING.hold))} service fee (12% of the hold) applies when she accepts.`:""}</span></div>
+          <label class="f">A line with it <span style="color:var(--muted);font-weight:400">— optional</span></label>
+          <input id="inv-msg" class="input" placeholder="Saw this is on your list too — join me?">
+          <div id="inv-err"></div>
+          <button class="btn btn-primary btn-block" style="margin-top:14px" onclick="inviteSend('${w.id}')">${I.send} Send the invitation — 3 proposed evenings attached</button>
+        </div>`:``}
+      </div></div>`;
+  }).join("");
+  return `
+<div class="container page-head" style="max-width:980px">
+  <span class="eyebrow purple">Hi ${esc(me.name.split(" ")[0])}</span>
+  <h1 style="font-size:2.2rem;margin:10px 0 6px">Where would you take her?</h1>
+  <p class="sub">Heart the places you are genuinely willing to go. You will only see women who want the same tables — ${left>0?left:"no"} invitation${left!==1?"s":""} left this week.</p>
+  ${wishGrid(me, "Invitations can only go to women whose list overlaps yours.")}
+  ${upcomingHTML(me)}
+  <h2 style="font-size:1.5rem;margin:34px 0 12px;font-family:'Fraunces',Georgia,serif">You want the same tables</h2>
+  ${women.length ? `<div class="feed">${cards}</div>` : `<div class="empty"><h3>No overlaps yet</h3>Heart a few more places above to find women who want the same evenings.</div>`}
+</div>`;
+}
+function ciBadge(m, k, isMe){
+  if(m.checkin && m.checkin[k]) return `<span class="vpill">✓ Checked in</span>`;
+  if(isMe) return `<button class="btn btn-primary btn-sm" onclick="checkIn('${m.id}','${k}')">I'm at the venue</button>`;
+  return `<span class="small">Not yet · <button class="btn btn-ghost btn-sm" style="padding:3px 10px;font-size:12px" onclick="checkIn('${m.id}','${k}')">simulate — demo</button></span>`;
+}
+function checkIn(mid, k){
+  const m = DB.matches.find(x=>x.id===mid); if(!m) return;
+  m.checkin = m.checkin || {w:false, m:false}; m.checkin[k] = true; save();
+  toast("Checked in"); render();
+}
+function approve(postId){
+  const p = DB.posts.find(x=>x.id===postId);
+  const w = finalWin(p);
+  let when = null;
+  if(w){ const d = new Date(w.start); if(w.flex) d.setHours(19,30,0,0); when = d.toISOString(); }
+  p.status="matched";
+  const m={id:"m"+(DB.matches.length+1), postId, womanId:p.womanId, manId:p.fundedBy, when, checkin:{w:false,m:false}, at:new Date().toISOString()};
+  DB.matches.push(m); finalPick=null; save();
+  go("#/match/"+m.id);
+}
+function decline(postId){
+  const p = DB.posts.find(x=>x.id===postId);
+  p.status="open"; p.fundedBy=null; p.amount=null; save();
+  toast("Passed — your date is open again"); render();
+}
+
+/* 10 · Match confirmed */
+P.match = (matchId) => {
+  const m = DB.matches.find(x=>x.id===matchId); if(!m) return P.landing();
+  const p = DB.posts.find(x=>x.id===m.postId), w=user(m.womanId), man=user(m.manId);
+  const me = DB.session ? user(DB.session) : null;
+  const prov = p.venue.provider;
+  const reserveLabel = prov==="opentable" ? "Reserve a table on OpenTable" : prov==="resy" ? "Reserve a table on Resy" : "Get directions";
+  const pad2 = n => String(n).padStart(2,"0");
+  const localDT = m.when ? (d=>`${d.getFullYear()}-${pad2(d.getMonth()+1)}-${pad2(d.getDate())}T${pad2(d.getHours())}%3A${pad2(d.getMinutes())}`)(new Date(m.when)) : null;
+  const reserveHref = prov==="opentable" ? `https://www.opentable.com/s?term=${encodeURIComponent(p.venue.name)}&latitude=${p.venue.lat}&longitude=${p.venue.lng}${localDT?`&dateTime=${localDT}&covers=2`:""}`
+    : prov==="resy" ? `https://resy.com/?query=${encodeURIComponent(p.venue.name)}${m.when?`&date=${localDT.slice(0,10)}&seats=2`:""}`
+    : `https://www.google.com/maps/search/?api=1&query=${p.venue.lat},${p.venue.lng}`;
+  const gcalHref = m.when ? (()=>{
+    const st = new Date(m.when), en = new Date(st.getTime() + 150*60000);
+    const g = d => d.toISOString().replace(/[-:]/g,"").replace(/\.\d{3}/,"");
+    return `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent("WannaGo · "+p.venue.name)}&dates=${g(st)}/${g(en)}&location=${encodeURIComponent(p.venue.addr)}&details=${encodeURIComponent('"'+p.idea+'"')}`;
+  })() : null;
+  return `
+<div class="container">
+  <div class="match-burst">
+    <div class="match-avatars">${avatar(w,116,"ring")}${avatar(man,116,"ring-p")}</div>
+    <div class="match-heart">${I.heartF}</div>
+    <h1 class="serif" style="font-style:italic;font-size:clamp(2.6rem,5vw,3.8rem);margin-top:18px">It's a <span class="grad-text">date</span>.</h1>
+    <p class="sub" style="margin-top:8px">${esc(w.name.split(" ")[0])} &amp; ${esc(man.name.split(" ")[0])} — the plan is set. All that's left is showing up.</p>
+  </div>
+
+  <div class="duo" style="max-width:880px;margin:0 auto 40px">
+    <div class="profile-card her-side">${photoBlock(w)}<div class="bd"><span class="eyebrow">She said yes</span><p class="sub" style="font-size:14.5px;margin-top:8px">${esc(w.bio)}</p></div></div>
+    <div class="profile-card him-side">${photoBlock(man)}<div class="bd"><span class="eyebrow purple">${man.gender==="man"?"He":"She"} committed to the night</span>${vBadges(man)}<p class="sub" style="font-size:14.5px;margin:8px 0 10px">${esc(man.bio)}</p><div class="chips">${(man.interests||[]).map(i=>`<span class="pill static" style="height:26px;font-size:12px">${esc(i)}</span>`).join("")}</div></div></div>
+  </div>
+
+  <div class="ticket">
+    <div class="stub"><span class="t">Date Summary</span><span class="d">MATCH #${m.id.slice(1).padStart(4,"0")}</span></div>
+    <div class="tbody">
+      <span class="notch l"></span><span class="notch r"></span>
+      ${venueBanner(p.venue, 160)}
+      <dl>
+        <div style="grid-column:1/-1"><dt>When</dt><dd style="font-size:1.15rem">${m.when ? wWhen(m.when) : "Time to be set"}</dd></div>
+        <div><dt>Venue</dt><dd>${esc(p.venue.name)}</dd><dd class="small" style="margin-top:2px">${esc(p.venue.addr)}</dd>${p.venue.perk?`<dd class="small" style="margin-top:2px;color:var(--success);font-weight:500">Perk: ${esc(p.venue.perk)}</dd>`:""}</div>
+        <div><dt>${p.min===p.max?"Show-up hold":"Evening budget"}</dt><dd class="money">${fmt(p.amount)}</dd><dd class="small" style="margin-top:2px">${p.min===p.max?"released when both check in":`range ${fmt(p.min)}–${fmt(p.max)}`}</dd></div>
+        <div style="grid-column:1/-1"><dt>The plan</dt><dd>"${esc(p.idea)}"</dd></div>
+        <div><dt>Matched</dt><dd class="mono" style="font-size:13.5px;color:var(--text-2)">${stamp(m.at)}</dd></div>
+        <div><dt>Between</dt><dd>${esc(w.name.split(" ")[0])} &amp; ${esc(man.name.split(" ")[0])}</dd></div>
+      </dl>
+      <a class="btn btn-primary btn-lg btn-block" style="margin-top:24px" href="${reserveHref}" target="_blank" rel="noopener">${I.cal} ${reserveLabel}${m.when?" · "+new Date(m.when).toLocaleTimeString("en-US",{hour:"numeric",minute:"2-digit"}):""}</a>
+      ${gcalHref?`<a class="btn btn-ghost btn-block" style="margin-top:8px" href="${gcalHref}" target="_blank" rel="noopener">${I.cal} Add to Google Calendar</a>`:""}
+      <p class="small" style="text-align:center;margin-top:10px">Both of you get reminders 24h and 2h before${prov?" · reservation link is prefilled with your time":""}.</p>
+      <div class="checkin">
+        <span class="eyebrow" style="font-size:10px">Show-up protection</span>
+        <div class="ci-row"><span>${esc(w.name.split(" ")[0])}</span>${ciBadge(m,"w",me&&me.id===w.id)}</div>
+        <div class="ci-row"><span>${esc(man.name.split(" ")[0])}</span>${ciBadge(m,"m",me&&me.id===man.id)}</div>
+        ${(m.checkin&&m.checkin.w&&m.checkin.m)
+          ? `<div class="ci-done">${I.check} Both checked in — holds released, nobody owes a thing. Enjoy ${esc(p.venue.name)}, and heart your next spot for date two.</div>`
+          : `<p class="small" style="margin-top:8px">One tap from the reminder when you arrive. Silence never costs money — the hold only moves if someone reports a no-show and the other side stays silent.</p>`}
+      </div>
+    </div>
+  </div>
+</div>`;
+};
+
+/* 11 · Admin */
+let adminTab = "users";
+P.admin = () => {
+  const me = user(DB.session); if(!me || me.role!=="admin") return P.login();
+  const women=DB.users.filter(u=>u.role==="curator").length, men=DB.users.filter(u=>u.role==="funder").length;
+  const funded=DB.posts.filter(p=>p.status!=="open");
+  const volume=funded.reduce((s,p)=>s+(p.amount||0),0);
+  const tabs = ["users","invitations","posts","matches"];
+  let table = "";
+  if(adminTab==="users") table = `<table class="data"><tr><th>User</th><th>Role</th><th>Age</th><th>Email</th><th>Photos</th></tr>
+    ${DB.users.filter(u=>u.role!=="admin").map(u=>`<tr><td style="display:flex;gap:10px;align-items:center">${avatar(u,32)} ${esc(u.name)}</td>
+    <td><span class="badge ${u.role==="curator"?"b-pink":"b-purple"}">${u.role==="curator"?"list-maker":"inviter"}</span></td><td>${u.age}</td><td class="mono" style="font-size:13px">${esc(u.email)}</td><td>${u.photos}</td></tr>`).join("")}</table>`;
+  if(adminTab==="invitations") table = DB.invites.length ? `<table class="data"><tr><th>From</th><th>To</th><th>Venue</th><th>Hold</th><th>Status</th></tr>
+    ${DB.invites.map(i=>{const v=VENUES.find(x=>x.id===i.venueId);return `<tr><td>${esc(user(i.manId).name)}</td><td>${esc(user(i.womanId).name)}</td><td>${esc(v?v.name:"—")}</td><td class="money">${fmt(i.amount)}</td><td>${i.status==="pending"?'<span class="badge b-info">Pending</span>':i.status==="accepted"?'<span class="badge b-gold">Accepted</span>':'<span class="badge b-warning">Passed</span>'}</td></tr>`}).join("")}</table>` : `<div class="empty"><h3>No invitations yet</h3>Send one as daniel@demo to see the funnel.</div>`;
+  if(adminTab==="posts") table = `<table class="data"><tr><th>Venue</th><th>Her</th><th>Amount</th><th>Status</th><th>Him</th></tr>
+    ${DB.posts.map(p=>`<tr><td>${esc(p.venue.name)}</td><td>${esc(user(p.womanId).name)}</td><td class="money">${p.min===p.max?fmt(p.amount):fmt(p.min)+"–"+fmt(p.max)}</td>
+    <td>${p.status==="open"?'<span class="badge b-info">Open</span>':p.status==="funded"?'<span class="badge b-warning">Pending yes</span>':'<span class="badge b-gold">Matched</span>'}</td>
+    <td>${p.fundedBy?esc(user(p.fundedBy).name)+" · "+fmt(p.amount):"—"}</td></tr>`).join("")}</table>`;
+  if(adminTab==="matches") table = DB.matches.length ? `<table class="data"><tr><th>Match</th><th>Her</th><th>Him</th><th>Venue</th><th>Amount</th><th>Timestamp</th></tr>
+    ${DB.matches.map(m=>{const p=DB.posts.find(x=>x.id===m.postId);return `<tr><td class="mono">#${m.id.slice(1).padStart(4,"0")}</td><td>${esc(user(m.womanId).name)}</td><td>${esc(user(m.manId).name)}</td><td>${esc(p.venue.name)}</td><td class="money">${fmt(p.amount)}</td><td class="mono" style="font-size:13px">${stamp(m.at)}</td></tr>`}).join("")}</table>`
+    : `<div class="empty"><h3>No matches yet</h3>Accept an invitation as sofia@demo to see one here.</div>`;
+  return `
+<div class="container page-head">
+  <span class="eyebrow">${I.shield.replace('class="icon"','class="icon sm" style="vertical-align:-3px"')} Admin panel</span>
+  <h1 style="font-size:2.4rem;margin:10px 0">Operations</h1>
+  <div class="stat-row">
+    <div class="stat"><div class="v">${women}</div><div class="l">List-makers</div></div>
+    <div class="stat"><div class="v">${men}</div><div class="l">Inviters</div></div>
+    <div class="stat"><div class="v">${DB.posts.length}</div><div class="l">Date posts</div></div>
+    <div class="stat"><div class="v">${DB.matches.length}</div><div class="l">Matches</div></div>
+    <div class="stat"><div class="v grad-text">${fmt(volume)}</div><div class="l">Hold volume</div></div>
+  </div>
+  <div class="panel" style="margin:4px 0 20px">
+    <span class="eyebrow">Revenue model — launch decision (toggle to preview phase 2)</span>
+    <div style="display:flex;gap:10px;margin-top:12px;flex-wrap:wrap">
+      <button class="btn ${pricingMode()==="take"?"btn-primary":"btn-ghost"}" onclick="setPricing('take')">${I.wallet} Launch: $${Math.round(PRICING.hold*PRICING.takeRate)} per accepted invitation</button>
+      <button class="btn ${pricingMode()==="subscription"?"btn-primary":"btn-ghost"}" onclick="setPricing('subscription')">${I.heart} Phase 2: $${PRICING.subMen}/mo men · $${PRICING.subWomen}/mo women</button>
+    </div>
+    <p class="small" style="margin-top:10px">${pricingMode()==="subscription"
+      ? "Phase 2 preview — flip on once data shows 2+ dates per man per month: men $"+PRICING.subMen+"/month with no per-invitation fees, women $"+PRICING.subWomen+"/month after a "+PRICING.trialDays+"-day free trial. Demo MRR: "+fmt(DB.users.filter(u=>u.sub&&u.role==="funder").length*PRICING.subMen + DB.users.filter(u=>u.sub&&u.role==="curator").length*PRICING.subWomen)+" from "+DB.users.filter(u=>u.sub).length+" subscribers · "+DB.users.filter(u=>u.role==="curator"&&!u.sub&&trialDaysLeft(u)>0).length+" women in free trial."
+      : "Launch model (locked): joining is free; a 12% service fee on the $"+PRICING.hold+" show-up hold — $"+Math.round(PRICING.hold*PRICING.takeRate)+" per accepted invitation, refunded to whoever showed up if the other no-shows. The hold itself is a deterrent, never revenue. Demo revenue: "+fmt(DB.posts.reduce((s,p)=>s+(p.fee||0),0))+" from "+DB.posts.filter(p=>p.fee).length+" accepted invitation"+(DB.posts.filter(p=>p.fee).length!==1?"s":"")+"."}</p>
+    <span class="eyebrow" style="display:block;margin-top:18px">No-show penalty — launch decision</span>
+    <div style="display:flex;gap:10px;margin-top:12px;flex-wrap:wrap">
+      <button class="btn ${(DB.payout||"a")==="a"?"btn-primary":"btn-ghost"}" onclick="DB.payout='a';save();render()">${I.shield} Option A (launch): capture → WannaGo</button>
+      <button class="btn ${(DB.payout||"a")==="b"?"btn-primary":"btn-ghost"}" onclick="DB.payout='b';save();render()">${I.wallet} Option B (v2): split + instant dining card</button>
+    </div>
+    <p class="small" style="margin-top:10px">${(DB.payout||"a")==="a"
+      ? "Live at launch: no-show → capture 50–100% of the $"+PRICING.hold+" hold by notice window (free ≥24h · 50% late cancel · 100% day-of silence). Captured fees go to WannaGo; the stood-up member gets their service fee back and a fee-free next invitation."
+      : "v2 preview: same capture logic, then split — e.g. 75% capture on $"+PRICING.hold+" = $"+Math.round(PRICING.hold*.75)+", of which ~40% ($"+Math.round(PRICING.hold*.75*.4)+") to WannaGo and ~60% ($"+Math.round(PRICING.hold*.75*.6)+") auto-funds a virtual dining card pushed to the stood-up member's wallet — dinner's on the flake, spendable tonight."}</p>
+    <span class="eyebrow" style="display:block;margin-top:18px">Matching mechanic — live demo toggle</span>
+    <div style="display:flex;gap:10px;margin-top:12px;flex-wrap:wrap">
+      <button class="btn ${mech()==="invite"?"btn-primary":"btn-ghost"}" onclick="setMech('invite')">${I.send} Invitations — he invites from her list</button>
+      <button class="btn ${mech()==="post"?"btn-primary":"btn-ghost"}" onclick="setMech('post')">${I.spark} Date posts — she posts, he funds</button>
+    </div>
+    <p class="small" style="margin-top:10px">${mech()==="invite"
+      ? "Live now: women heart the places they want to go; men pick places they would take her and invite only where lists overlap. No budgets on profiles — the only money is a $"+PRICING.hold+" show-up hold, never the meal. 3 invitations per man per week."
+      : "Live now: women post a full date (venue, plan, budget, evenings); men fund it and she approves. The original mechanic."}</p>
+  </div>
+  <div class="tabs">${tabs.map(t=>`<button class="tab ${adminTab===t?"on":""}" onclick="adminTab='${t}';render()">${t[0].toUpperCase()+t.slice(1)}</button>`).join("")}</div>
+  <div class="card table-wrap" style="padding:8px 8px 4px">${table}</div>
+</div>`;
+};
+
+
+/* 12 · Edit profile */
+P.profile = () => {
+  const me = user(DB.session); if(!me || me.role === "admin") return P.login();
+  const her = me.role === "curator";
+  const gal = me.gallery || [];
+  const tiles = gal.map((p,i)=>`
+    <div class="up-th ${i===0?"main":""}"><img src="${p}" alt="">
+      ${i===0?'<span class="lead-tag">Main</span>':`<button type="button" class="mk" title="Make main" onclick="mainPhoto(${i})">★</button>`}
+      <button type="button" aria-label="Remove" onclick="removeProfilePhoto(${i})">✕</button>
+    </div>`).join("");
+  return `
+<div class="narrow page-head" style="max-width:640px">
+  <a class="small" href="${her ? "woman-dashboard.html" : "man-browse.html"}" style="color:var(--muted)">← Back to ${her ? "my invitations" : "browsing"}</a>
+  <div style="display:flex;gap:18px;align-items:center;margin-top:18px">
+    ${avatar(me,72,her?"ring":"ring-p")}
+    <div><span class="eyebrow ${her?"":"purple"}">Edit profile</span>
+    <h1 style="font-size:2.1rem;margin-top:4px">${esc(me.name)}</h1></div>
+  </div>
+  <div class="panel" style="margin-top:24px">
+    <label class="f" style="margin-top:0">Photos <span style="color:var(--muted);font-weight:400">— at least 1 required · first photo leads</span></label>
+    <input type="file" id="ph-file" accept="image/*" multiple style="display:none" onchange="profileAddPhotos(this.files); this.value=''">
+    <div class="up-grid">${tiles}${gal.length<6?`<button type="button" class="up-add" onclick="pickPhotos()" aria-label="Add photo">+</button>`:""}</div>
+    <div class="grid-2" style="margin-top:6px">
+      <div><label class="f">Full name</label><input id="pr-name" class="input" value="${esc(me.name)}"></div>
+      <div><label class="f">Age</label><input id="pr-age" class="input" type="number" min="18" value="${me.age}"></div>
+    </div>
+    <label class="f">Bio</label><textarea id="pr-bio" class="input">${esc(me.bio)}</textarea>
+    <label class="f">Your interests <span style="color:var(--muted);font-weight:400">— shown on your profile</span></label>
+    <div class="chips" id="chip-grid">${INTERESTS.map(i=>`<button class="pill ${(me.interests||[]).includes(i)?"on":""}" onclick="this.classList.toggle('on')">${esc(i)}</button>`).join("")}</div>
+    <div id="pr-err"></div>
+    <div style="display:flex;gap:12px;margin-top:26px">
+      <button class="btn btn-primary btn-lg" style="flex:1" onclick="saveProfile()">Save changes</button>
+      <button class="btn btn-ghost btn-lg" onclick="showProfile('${me.id}')">Preview</button>
+      <a class="btn btn-ghost btn-lg" href="${her ? "woman-dashboard.html" : "man-browse.html"}">Cancel</a>
+    </div>
+    <p class="hint" style="margin-top:14px">Email and password changes will live in Account settings (backend).</p>
+  </div>
+</div>`;
+};
+
+function saveProfile(){
+  const me = user(DB.session);
+  const name = $("pr-name").value.trim(), age = +$("pr-age").value, bio = $("pr-bio").value.trim();
+  const errs = [];
+  if(!name) errs.push("Name is required.");
+  if(!age || age < 18) errs.push("Age must be 18 or older.");
+  const ints = [...document.querySelectorAll("#chip-grid .pill.on")].map(b=>b.textContent);
+  if(me.role === "funder" && !ints.length) errs.push("Keep at least one interest.");
+  else me.interests = ints;
+  if(errs.length){ $("pr-err").innerHTML = errs.map(e=>`<div class="err-msg">${e}</div>`).join(""); return; }
+  me.name = name; me.age = age; me.bio = bio || "—";
+  save(); toast("Profile saved"); render();
+}
+
+/* ═══════════ ROUTER (single-file preview: hash = screen) ═══════════ */
+const FILE2PAGE = {"":"landing","landing.html":"landing","index.html":"landing","register.html":"register","register-woman.html":"register-woman","register-man.html":"register-man","login.html":"login","woman-dashboard.html":"woman","man-browse.html":"browse","fund-date.html":"fund","post-detail.html":"post","match-confirmed.html":"match","admin.html":"admin","trending.html":"trending","profile.html":"profile"};
+const SCREENS = [["landing.html","Landing"],["trending.html","Trending tables"],["register.html","Register — choose role"],["register-woman.html","Register — woman"],["register-man.html","Register — man"],["login.html","Login"],["woman-dashboard.html","Woman dashboard"],["man-browse.html","Man browse feed"],["fund-date.html?post=p1","Fund a date"],["post-detail.html?post=p2","Post detail (her view)"],["match-confirmed.html","Match confirmed"],["profile.html","Edit profile"],["admin.html","Admin panel"]];
+function render(){
+  renderNav();
+  const [file, qs] = location.hash.replace(/^#/,"").split("?");
+  const page = FILE2PAGE[file] ?? "landing";
+  const q = new URLSearchParams(qs || "");
+  const app = $("app");
+  switch(page){
+    case "landing": app.innerHTML = P.landing(); initLanding(); break;
+    case "trending": app.innerHTML = P.trending(); break;
+    case "register": app.innerHTML = P.chooseRole(); break;
+    case "register-woman": app.innerHTML = P.regWoman(); uploaded = 0; uploadedPhotos = []; break;
+    case "register-man": app.innerHTML = P.regMan(); uploaded = 0; uploadedPhotos = []; break;
+    case "login": app.innerHTML = P.login(); break;
+    case "woman": app.innerHTML = P.woman(); break;
+    case "browse": app.innerHTML = P.browse(); break;
+    case "fund": app.innerHTML = P.fund(q.get("post")); break;
+    case "post": app.innerHTML = P.post(q.get("post")); break;
+    case "match": app.innerHTML = P.match(q.get("match")); break;
+    case "admin": app.innerHTML = P.admin(); break;
+    case "profile": app.innerHTML = P.profile(); break;
+  }
+  const sel = document.getElementById("screen-jump");
+  if (sel) sel.value = "";
+}
+/* Same-page rerenders (hearts, picks, toggles) keep scroll; page changes scroll to top */
+const __renderCore = render;
+render = function(){
+  const page = FILE2PAGE[location.hash.replace(/^#/,"").split("?")[0]] ?? "landing";
+  const keep = page === window.__lastPage;
+  window.__lastPage = page;
+  const sy = window.scrollY || 0;
+  __renderCore();
+  try { window.scrollTo(0, keep ? sy : 0); } catch(e){}
+};
+document.addEventListener("click", e => {
+  const a = e.target.closest("a[href]");
+  if (!a) return;
+  const h = a.getAttribute("href");
+  if (h === "#"){ e.preventDefault(); return; }
+  if (/^https?:/.test(h) || a.target === "_blank") return;
+  if (h.includes(".html")){ e.preventDefault(); go(h); }
+});
+window.addEventListener("hashchange", render);
+const _sn = document.getElementById("static-note"); if (_sn) _sn.remove();
+document.body.insertAdjacentHTML("afterbegin",
+  `<div class="preview-bar"><b>WannaGo</b> interactive preview — everything is clickable. <b>Demo logins:</b> sofia@demo (woman) · daniel@demo (man) · james@demo (man) · admin@demo — any password. <select id="screen-jump" onchange="if(this.value)go(this.value)" aria-label="Jump to screen"><option value="">Jump to a screen…</option>${SCREENS.map(s=>`<option value="${s[0]}">${s[1]}</option>`).join("")}</select> <button onclick="resetDemo()">Reset demo</button></div>`);
+try { const t = sessionStorage.getItem("dateout-toast"); if (t){ sessionStorage.removeItem("dateout-toast"); setTimeout(()=>toast(t), 250); } } catch(e){}
+render();
+
+</script>
+</body>
+</html>
