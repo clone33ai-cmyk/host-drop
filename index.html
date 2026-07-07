@@ -458,7 +458,18 @@ table.data td:first-child{color:var(--text)}
 .up-add{aspect-ratio:1;border-radius:12px;border:1.5px dashed var(--border-strong);background:var(--bg);color:var(--muted);font:300 28px 'Inter',sans-serif;cursor:pointer}
 .up-add:hover{border-color:var(--terracotta);color:var(--terracotta)}
 .pf-thumbs{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
-.pf-th{width:54px;height:54px;border-radius:10px;object-fit:cover;cursor:pointer;border:2px solid transparent}
+.pf-th{width:68px;height:68px;border-radius:10px;object-fit:cover;cursor:pointer;border:2px solid transparent}
+.show-card{background:var(--surface);border:1px solid var(--border);border-radius:20px;overflow:hidden;box-shadow:0 14px 40px rgba(32,25,18,.10)}
+.show-ph{position:relative;height:420px}
+.show-ph img{width:100%;height:100%;object-fit:cover;display:block}
+.show-ph .scrim{position:absolute;inset:0;background:linear-gradient(180deg,transparent 48%,rgba(32,25,18,.86))}
+.show-who{position:absolute;left:18px;bottom:14px;color:#fff;font:700 1.55rem 'Fraunces',Georgia,serif}
+.show-sub{display:block;font:400 12.5px 'Inter',sans-serif;color:rgba(255,255,255,.82);margin-top:3px}
+.tc-img{background:linear-gradient(135deg,#d9c9b8,#b9a58f)}
+.tr-noimg{display:inline-flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#d9c9b8,#b9a58f);color:#fff}
+.when-row{display:flex;gap:4px;margin-top:7px;flex-wrap:wrap}
+.pill.tiny{height:24px;padding:0 9px;font-size:10.5px;border-radius:999px}
+@media(max-width:720px){.show-ph{height:340px}}
 .pf-th.on{border-color:var(--terracotta)}
 .vtag.partner{background:var(--sage-soft);color:#465545;border-color:rgba(138,154,126,.55)}
 .checkin{border-top:1px dashed var(--border-strong);margin-top:18px;padding-top:14px;text-align:left}
@@ -515,6 +526,41 @@ const wTime = w => w.flex ? "Evening, flexible"
 const wWhen = iso => new Date(iso).toLocaleString("en-US",{weekday:"short",month:"short",day:"numeric",hour:"numeric",minute:"2-digit"});
 
 /* ═══════════ VENUE HIGHLIGHTS + TRUST BADGES ═══════════ */
+const allVenues = () => VENUES.concat(DB.customVenues || []);
+function wishWhenSet(vid, val){ const me = user(DB.session); if(!me) return; me.wishWhen = me.wishWhen || {}; me.wishWhen[vid] = val; save(); render(); }
+const whenOf = (u, vid) => (u && u.wishWhen && u.wishWhen[vid]) || "any";
+function proposeWins(her, vid){
+  const nd = t => { const d = (t - new Date().getDay() + 7) % 7; return d === 0 ? 7 : d; };
+  const pref = whenOf(her, vid);
+  if(pref === "weekends")   return [mkWin(nd(5),2), mkWin(nd(6),2), mkWin(nd(6)+7,1)];
+  if(pref === "weeknights") return [mkWin(nd(2),1), mkWin(nd(3),1), mkWin(nd(4),2)];
+  return [mkWin(3,1), mkWin(5,2), mkWin(9,2)];
+}
+const vById = id => VENUES.find(v=>v.id===id) || (DB.customVenues||[]).find(v=>v.id===id);
+function addVenue(){
+  const me = user(DB.session); if(!me) return;
+  const name = ($("nv-name") ? $("nv-name").value : "").trim();
+  const area = ($("nv-area") ? $("nv-area").value : "").trim();
+  if(!name){ toast("Give the place a name"); return; }
+  DB.customVenues = DB.customVenues || [];
+  const dupe = allVenues().find(v => v.name.toLowerCase() === name.toLowerCase());
+  if(dupe){ if(!(me.wishlist||[]).includes(dupe.id)) me.wishlist.push(dupe.id); save(); toast("Already on WannaGo — hearted it for you"); render(); return; }
+  const id = "vc" + (DB.customVenues.length + 1);
+  DB.customVenues.push({id, name, addr: (area || "New York") + ", New York", tags: ["Member added"], photo: "", partner: false});
+  me.wishlist = me.wishlist || []; me.wishlist.push(id);
+  save(); toast("Added — " + name + " is on your list"); render();
+}
+function addPlaceForm(){
+  return `<div class="card" style="margin-top:16px;text-align:left">
+    <b style="font-size:14.5px">Don't see the place you're craving? Add it.</b>
+    <p class="small" style="margin:4px 0 10px">Any restaurant in the city. (Production searches Google Places — type it for now.)</p>
+    <div class="grid-2">
+      <div><label class="f" style="margin-top:0">Place name</label><input id="nv-name" class="input" placeholder="Carbone"></div>
+      <div><label class="f" style="margin-top:0">Neighborhood</label><input id="nv-area" class="input" placeholder="Greenwich Village"></div>
+    </div>
+    <button class="btn btn-ghost btn-block" style="margin-top:12px" onclick="addVenue()">${I.pin} Add it to my list</button>
+  </div>`;
+}
 const venueTag1 = v => { const t = v.partner ? "WannaGo partner" : (v.tags||[])[0]; return t ? `<span class="vtag onimg">${t}</span>` : ""; };
 const venueTags = (v, max) => (v.partner?`<span class="vtag partner">WannaGo partner</span>`:"") + (v.tags||[]).slice(0, max||3).map(t=>`<span class="vtag">${t}</span>`).join("");
 function vBadges(u){
@@ -595,6 +641,7 @@ const SEED = {
   mech: "invite",
 };
 SEED.users[0].wishlist = ["v1","v2","v4"];
+SEED.users[0].wishWhen = {v1:"weekends", v2:"weeknights"};
 SEED.users[1].wishlist = ["v2","v5"];
 SEED.users[2].wishlist = ["v1","v6"];
 SEED.users[3].wishlist = ["v1","v4","v6"];
@@ -627,6 +674,9 @@ try { DB = JSON.parse(localStorage.getItem("wannago-db-2")) || seed(); } catch(e
   (DB.matches||[]).forEach(m=>{ if(!m.checkin) m.checkin={w:false,m:false}; });
   if(!DB.pricing || DB.pricing === "membership") DB.pricing = "take";
   if(!DB.mech) DB.mech = "invite";
+  if(!DB.guestList) DB.guestList = [];
+  if(!DB.customVenues) DB.customVenues = [];
+  DB.users.forEach(u=>{ if(u.role!=="admin" && !u.wishWhen){ const su=SEED.users.find(x=>x.id===u.id); u.wishWhen = (su&&su.wishWhen) ? JSON.parse(JSON.stringify(su.wishWhen)) : {}; } });
   if(!DB.invites) DB.invites = JSON.parse(JSON.stringify(SEED.invites||[]));
   DB.users.forEach(u=>{ if(u.role!=="admin" && !u.gallery){ const su=SEED.users.find(x=>x.id===u.id); u.gallery = (su&&su.gallery) ? su.gallery.slice() : (u.photo ? [u.photo] : []); u.photos = u.gallery.length || u.photos || 0; } });
   DB.users.forEach(u=>{ if(u.role!=="admin" && !u.wishlist){ const su=SEED.users.find(x=>x.id===u.id); u.wishlist = (su&&su.wishlist) ? su.wishlist.slice() : []; } });
@@ -784,8 +834,8 @@ const P = {};
 P.landing = () => {
   const sofia = user("u1"), daniel = user("u4");
   const sess = DB.session ? user(DB.session) : null;
-  const ctaHref = !sess ? "register.html" : sess.role==="curator" ? "woman-dashboard.html" : sess.role==="funder" ? "man-browse.html" : "admin.html";
-  const ctaLabel = !sess ? "Create account" : sess.role==="curator" ? "Open my invitations" : sess.role==="funder" ? "Find a table" : "Open the admin panel";
+  const ctaHref = !sess ? "trending.html" : sess.role==="curator" ? "woman-dashboard.html" : sess.role==="funder" ? "man-browse.html" : "admin.html";
+  const ctaLabel = !sess ? "Start my list — free" : sess.role==="curator" ? "Open my invitations" : sess.role==="funder" ? "Find a table" : "Open the admin panel";
   const bokeh = [[8,18,26],[78,10,34],[62,32,18],[16,64,30],[88,58,22],[38,8,14],[70,80,26],[26,84,20]]
     .map(([x,y,s],k)=>`<i style="left:${x}%;top:${y}%;width:${s}px;height:${s}px;animation-delay:${k*.9}s"></i>`).join("");
   const wlRow = (v, on, want) => `
@@ -799,7 +849,7 @@ P.landing = () => {
   <div class="hero-bg" aria-hidden="true"><img src="${UNS("photo-1555396273-367ea4eb4db5")}" alt="" onerror="this.parentNode.remove()"></div>
   <div class="bokeh" aria-hidden="true">${bokeh}</div>
   <h1>Every table you've been<br><em>meaning to try.</em></h1>
-  <p class="sub">You save restaurants on Instagram and never go. WannaGo is the pathway: list the places you want, get invited by someone who wants the same table, and actually show up.</p>
+  <p class="sub">Start adding the restaurants you've been meaning to try — we'll find you someone who wants the same table. She lists. He invites. Both show up.</p>
   <a class="btn btn-primary btn-lg" href="${ctaHref}">${ctaLabel}</a>
 </section>
 
@@ -811,67 +861,37 @@ P.landing = () => {
   <div style="text-align:center;margin-top:20px"><a class="btn btn-ghost" href="trending.html">See the full trending list ${I.chev}</a></div>
 </section>
 
-<div class="night">
-  <div class="beat reveal">
-    <div class="when"><div class="day">Tuesday</div><div class="clock">7:02 PM</div><p>Sofia hearts the places she's been meaning to try. Thirty seconds, done. Her list stays private.</p></div>
-    <span class="dot"></span>
-    <div class="what">
-      <div class="card" style="max-width:360px;text-align:left">
-        <span class="eyebrow" style="font-size:10px">Sofia's list</span>
-        <div style="margin-top:10px">
-          ${wlRow(VENUES[0], true, 214)}
-          ${wlRow(VENUES[1], true, 187)}
-          ${wlRow(VENUES[4], false, 96)}
-        </div>
+<section class="reveal" style="max-width:1040px;margin:74px auto 0;padding:0 24px">
+  <div class="vs-head" style="margin-bottom:22px"><span class="ns-kicker">What's waiting inside</span><h2>Her list. <em>His commitment.</em></h2></div>
+  <div class="feed" style="grid-template-columns:repeat(auto-fit,minmax(300px,1fr));text-align:left">
+    <div class="show-card">
+      <div class="show-ph">
+        <img src="${UNS("photo-1494790108377-be9c29b29330")}" alt="Sofia" loading="lazy" onerror="if(!this.dataset.f){this.dataset.f=1;this.src='https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=900&q=75'}else{this.remove()}">
+        <div class="scrim"></div>
+        <div class="show-who">Sofia, 27 <span class="vtick" title="Photo verified">✓</span><span class="show-sub">Photo verified · Upper East Side</span></div>
+      </div>
+      <div class="bd">
+        <span class="eyebrow" style="font-size:10px">Sofia's list — where she wants to go</span>
+        <div style="margin-top:10px">${wlRow(VENUES[0],true,214)}${wlRow(VENUES[1],true,187)}${wlRow(VENUES[3],true,168)}</div>
+        <p class="small" style="margin-top:10px">Her list is private. Invitations can only come from it — and she picks the evening.</p>
+        <a class="btn btn-primary btn-block" style="margin-top:12px" href="register.html">Build your list ${I.chev}</a>
+      </div>
+    </div>
+    <div class="show-card">
+      <div class="show-ph">
+        <img src="${UNS("photo-1507003211169-0a1dd7228f2d")}" alt="Daniel" loading="lazy" onerror="if(!this.dataset.f){this.dataset.f=1;this.src='https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=900&q=75'}else{this.remove()}">
+        <div class="scrim"></div>
+        <div class="show-who">Daniel, 31 <span class="vtick" title="Photo verified">✓</span><span class="show-sub">Photo verified · 3 invitations a week</span></div>
+      </div>
+      <div class="bd">
+        <span class="eyebrow purple" style="font-size:10px">Daniel is committed to these tables</span>
+        <div class="vtags-row" style="margin:10px 0 6px">${["v1","v4","v6"].map(id=>{const v=vById(id);return `<span class="vtag mine">${I.heartF.replace('class="icon"','class="icon sm" style="width:11px;height:11px;vertical-align:-1px"')} ${esc(v.name)}</span>`;}).join("")}</div>
+        <p class="small">Every invitation carries a real show-up commitment behind it. He asks — you decide. See if you want the same tables.</p>
+        <a class="btn btn-secondary btn-block" style="margin-top:12px" href="register.html">See if you're his match ${I.chev}</a>
       </div>
     </div>
   </div>
-
-  <div class="beat flip reveal">
-    <div class="when"><div class="day">Wednesday</div><div class="clock">9:48 PM</div><p>Daniel wants the same table. He can only invite where lists overlap — and every invite carries a real commitment to show up.</p></div>
-    <span class="dot"></span>
-    <div class="what">
-      <div class="yes-card" style="text-align:left">
-        <div class="row">${avatar(daniel,52,"ring-p")}<div><b>${esc(daniel.name)}, ${daniel.age}<span class="vtick" title="Photo verified">✓</span></b><span class="small">Photo verified · 3 invites a week</span></div></div>
-        <p class="small" style="margin:10px 0 8px;font-size:13.5px">"Saw Lume is on your list too — would you like to join me?"</p>
-        <div class="vtags-row"><span class="vtag mine">${I.heartF.replace('class="icon"','class="icon sm" style="width:11px;height:11px;vertical-align:-1px"')} Lume Rooftop — on both lists</span></div>
-      </div>
-      <div class="artifact-note">${I.shield.replace('class="icon"','class="icon sm" style="color:var(--pink)"')} An invitation isn't a DM. He's committed to the night before she's said a word.</div>
-    </div>
-  </div>
-
-  <div class="beat reveal">
-    <div class="when"><div class="day">Thursday</div><div class="clock">8:15 AM</div><p>Sofia picks the evening that works. No chat marathon, no negotiating — just her yes.</p></div>
-    <span class="dot"></span>
-    <div class="what">
-      <div class="card" style="max-width:360px;text-align:left">
-        <span class="eyebrow" style="font-size:10px">Pick the evening</span>
-        <div class="win-pick pick-r on" style="cursor:default"><span class="box"></span><div style="flex:1"><div style="font-weight:500;font-size:14px">Saturday</div><div class="small">7:30 – 10:00 PM</div></div></div>
-        <div class="win-pick pick-r" style="cursor:default"><span class="box"></span><div style="flex:1"><div style="font-weight:500;font-size:14px">Next Thursday</div><div class="small">7:00 – 9:30 PM</div></div></div>
-        <span class="btn btn-primary btn-block yes-glow" style="margin-top:14px">${I.heartF} I'd love to go</span>
-      </div>
-      <div class="artifact-note">${I.heart.replace('class="icon"','class="icon sm" style="color:var(--pink)"')} Or she passes — no reasons owed, and he's none the poorer.</div>
-    </div>
-  </div>
-
-  <div class="beat flip reveal gold">
-    <div class="when"><div class="day">Saturday</div><div class="clock">7:30 PM</div><p>Both show up. That's the whole promise — and the app keeps score.</p></div>
-    <span class="dot"></span>
-    <div class="what">
-      <div class="ticket" style="max-width:400px;margin:0">
-        <div class="stub"><span class="t">It's a date.</span><span class="d">MATCH #0042</span></div>
-        <div class="tbody"><span class="notch l"></span><span class="notch r"></span>
-          ${venueBanner(VENUES[0], 120)}
-          <dl>
-            <div><dt>When</dt><dd>Sat · 7:30 PM</dd></div>
-            <div><dt>Where</dt><dd>Lume Rooftop</dd></div>
-          </dl>
-          <div style="display:flex;gap:8px;margin-top:16px;justify-content:center;flex-wrap:wrap"><span class="vpill">✓ Sofia checked in</span><span class="vpill">✓ Daniel checked in</span></div>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
+</section>
 
 <div class="colophon reveal"><span class="face-stack">${["u1","u4","u2","u5","u3"].map(id=>avatar(user(id),34)).join("")}</span> <b>12,400</b> tables wanted &nbsp;·&nbsp; <b>92%</b> showed up</div>
 
@@ -902,19 +922,21 @@ P.landing = () => {
 };
 P.trending = () => {
   const me = DB.session ? user(DB.session) : null;
+  const myList = me ? (me.wishlist||[]) : (DB.guestList||[]);
   const BASE = {v1:214, v2:187, v3:41, v4:168, v5:96, v6:153};
-  const rows = VENUES.map(v => ({v, want:(BASE[v.id]||50) + DB.users.filter(u=>(u.wishlist||[]).includes(v.id)).length}))
+  const rows = allVenues().map(v => ({v, want:(BASE[v.id] ?? (String(v.id).startsWith("vc") ? 0 : 50)) + DB.users.filter(u=>(u.wishlist||[]).includes(v.id)).length}))
     .sort((a,b)=>b.want-a.want);
   return `
 <div class="container page-head" style="max-width:760px">
   <span class="eyebrow">This week in New York</span>
   <h1 style="font-size:2.4rem;margin:10px 0 6px">The most-wanted <em class="serif" style="font-style:italic">tables</em></h1>
   <p class="sub">Ranked by real lists — how many people want to go. A spot here can't be bought.</p>
+  ${!me && (DB.guestList||[]).length ? `<div class="notice" style="margin-top:16px;text-align:left">${I.heartF.replace('class="icon"','class="icon sm" style="color:var(--pink);margin-top:2px"')} <span><b>${DB.guestList.length} place${DB.guestList.length!==1?"s":""} on your list.</b> Create your account and we'll find you someone who wants the same tables — your list comes with you. <a class="btn btn-primary btn-sm" style="margin-top:8px" href="register.html">Sign up free ${I.chev}</a></span></div>` : ``}
   <div style="margin-top:22px;text-align:left">
     ${rows.map((r,i)=>`
     <div class="trend-row">
       <span class="tr-rank ${i===0?"top":""}">#${i+1}</span>
-      <img class="tr-img" src="${r.v.photo}" alt="${esc(r.v.name)}" loading="lazy" onerror="this.remove()">
+      ${r.v.photo?`<img class="tr-img" src="${r.v.photo}" alt="${esc(r.v.name)}" loading="lazy" onerror="this.remove()">`:`<span class="tr-img tr-noimg">${I.pin.replace('class="icon"','class="icon sm"')}</span>`}
       <div style="flex:1;min-width:0">
         <div style="font-weight:500;font-size:15.5px">${esc(r.v.name)}</div>
         <div class="small" style="font-size:12px">${esc((r.v.addr.split(",")[1]||"").trim())}</div>
@@ -923,7 +945,7 @@ P.trending = () => {
       <div style="text-align:right;flex-shrink:0;display:flex;flex-direction:column;align-items:flex-end">
         <div style="font-weight:700;font-size:16px">${r.want}</div>
         <div class="small" style="font-size:11px">want to go</div>
-        ${me && me.role!=="admin" ? `<span class="mini-heart ${(me.wishlist||[]).includes(r.v.id)?"on":"off"}" style="margin-top:6px;cursor:pointer" onclick="wishToggle('${r.v.id}')">${I.heartF.replace('class="icon"','class="icon sm"')}</span>` : ``}
+        ${(!me || me.role!=="admin") ? `<span class="mini-heart ${myList.includes(r.v.id)?"on":"off"}" style="margin-top:6px;cursor:pointer" onclick="wishToggle('${r.v.id}')">${I.heartF.replace('class="icon"','class="icon sm"')}</span>` : ``}
       </div>
     </div>`).join("")}
   </div>
@@ -964,7 +986,8 @@ function regForm(role){
 <div class="narrow page-head">
   <span class="eyebrow ${her?"":"purple"}">${her?"Create your profile · Her side":"Create your profile · His side"}</span>
   <h1 style="font-size:2.4rem;margin:10px 0 6px">${her?"Tell them who they're dressing up for":"Tell her who's showing up"}</h1>
-  <p class="sub">${her?"Your profile travels with every date you post.":"She sees everything below before she approves a match."}</p>
+  <p class="sub">${her?"Your profile travels with every invitation you receive.":"She sees everything below before she approves a match."}</p>
+  ${(DB.guestList||[]).length ? `<div class="notice" style="margin:14px 0 0;text-align:left">${I.heartF.replace('class="icon"','class="icon sm" style="color:var(--pink);margin-top:2px"')} <span>The <b>${DB.guestList.length} place${DB.guestList.length!==1?"s":""}</b> you hearted will be on your list the moment you join.</span></div>` : ``}
   <div class="panel" style="margin-top:26px">
     <div class="grid-2">
       <div><label class="f">Full name</label><input id="r-name" class="input" placeholder="Your name"></div>
@@ -1040,10 +1063,10 @@ function showProfile(uid){
   const gal = (u.gallery && u.gallery.length) ? u.gallery : (u.photo ? [u.photo] : []);
   const g = grads[u.g ?? 0];
   const d = document.createElement("div"); d.className = "legal-overlay"; d.id = "legal";
-  d.innerHTML = `<div class="legal-card" style="max-width:440px">
+  d.innerHTML = `<div class="legal-card" style="max-width:540px">
     <div class="legal-head"><b style="font-size:15px">${esc(u.name)}, ${u.age}</b><button class="btn btn-ghost btn-sm" onclick="closeLegal()">✕ Close</button></div>
     <div class="legal-body" style="padding:16px 18px 20px">
-      <div style="height:320px;position:relative;border-radius:16px;overflow:hidden;background:linear-gradient(135deg,${g[0]},${g[1]})">
+      <div style="height:min(56vh,460px);position:relative;border-radius:16px;overflow:hidden;background:linear-gradient(135deg,${g[0]},${g[1]})">
         ${gal[0]?`<img id="pf-main" src="${gal[0]}" alt="${esc(u.name)}" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" onerror="this.remove()">`:""}
         <div style="position:absolute;inset:0;background:linear-gradient(180deg,transparent 55%,rgba(32,25,18,.8))"></div>
         <div style="position:absolute;left:16px;bottom:12px;color:#fff;font:700 1.15rem 'Fraunces',Georgia,serif">${esc(u.name)}, ${u.age} <span class="vtick" title="Photo verified" style="font-size:.8rem">✓</span></div>
@@ -1069,8 +1092,8 @@ function register(role){
   const interests = role==="man" ? [...document.querySelectorAll("#chip-grid .pill.on")].map(b=>b.textContent) : undefined;
   if(role==="man" && !interests.length) errs.push("Pick at least one interest.");
   if(errs.length){ $("r-err").innerHTML = errs.map(e=>`<div class="err-msg">${e}</div>`).join(""); return; }
-  const u={id:"u"+(DB.users.length+1), role: role==="woman" ? "curator" : "funder", gender: role==="woman" ? "woman" : "man", seeks: role==="woman" ? "men" : "women", wishlist:[], name, age, email, bio: bio||"—", photos:uploadedPhotos.length, photo: uploadedPhotos[0]||undefined, gallery: uploadedPhotos.slice(), g:Math.floor(Math.random()*grads.length), interests, verify:{photo:true}, sub:false, trialStart: role==="woman" ? new Date().toISOString() : null};
-  DB.users.push(u); DB.session=u.id; save(); uploaded=0; uploadedPhotos=[];
+  const u={id:"u"+(DB.users.length+1), role: role==="woman" ? "curator" : "funder", gender: role==="woman" ? "woman" : "man", seeks: role==="woman" ? "men" : "women", wishlist:(DB.guestList||[]).slice(), name, age, email, bio: bio||"—", photos:uploadedPhotos.length, photo: uploadedPhotos[0]||undefined, gallery: uploadedPhotos.slice(), g:Math.floor(Math.random()*grads.length), interests, verify:{photo:true}, sub:false, trialStart: role==="woman" ? new Date().toISOString() : null};
+  DB.users.push(u); DB.session=u.id; DB.guestList=[]; save(); uploaded=0; uploadedPhotos=[];
   toastNext("Welcome to WannaGo, "+name.split(" ")[0]);
   go(role==="woman" ? "#/woman" : "#/browse");
 }
@@ -1122,8 +1145,10 @@ P.woman = () => {
       <label class="f">Trending in New York <span style="color:var(--muted);font-weight:400">— the tables everyone's posting</span></label>
       <div class="trend-grid">${VENUES.filter(v=>v.tags&&v.tags.length).slice(0,4).map(v=>`
         <div class="trend-card" onclick='acPick("${v.id}")'>
-          <div class="tc-img"><img src="${v.photo}" alt="${esc(v.name)}" loading="lazy" onerror="this.remove()"><div class="tc-tags">${venueTag1(v)}</div></div>
-          <div class="tc-bd"><b>${esc(v.name)}</b><span class="small" style="font-size:11.5px">${esc((v.addr.split(",")[1]||"").trim())}</span></div>
+          <div class="tc-img">${v.photo?`<img src="${v.photo}" alt="${esc(v.name)}" loading="lazy" onerror="this.remove()">`:""}<div class="tc-tags">${venueTag1(v)}</div></div>
+          <div class="tc-bd"><b>${esc(v.name)}</b><span class="small" style="font-size:11.5px">${esc((v.addr.split(",")[1]||"").trim())}</span>
+        ${(me.wishlist||[]).includes(v.id) ? `<div class="when-row">${[["weeknights","Weeknights"],["weekends","Weekends"],["any","Anytime"]].map(([k,l])=>`<button type="button" class="pill tiny ${whenOf(me,v.id)===k?"on":""}" onclick="wishWhenSet('${v.id}','${k}')">${l}</button>`).join("")}</div>` : ``}
+      </div>
         </div>`).join("")}</div>
       <label class="f">Venue <span style="color:var(--muted);font-weight:400">— tap a spot above, or search any venue</span></label>
       <div class="ac-wrap">
@@ -1448,19 +1473,27 @@ const mech = () => DB.mech || "invite";
 function setMech(m){ DB.mech = m; save(); toast(m==="invite" ? "Mechanic: invitations" : "Mechanic: date posts"); render(); }
 const overlapV = (a,b) => (a.wishlist||[]).filter(v => (b.wishlist||[]).includes(v));
 function wishToggle(vid){
-  const me = user(DB.session); if(!me) return;
+  const me = user(DB.session);
+  if(!me){
+    DB.guestList = DB.guestList || [];
+    const gi = DB.guestList.indexOf(vid);
+    if(gi>-1) DB.guestList.splice(gi,1); else DB.guestList.push(vid);
+    save(); render(); return;
+  }
   me.wishlist = me.wishlist || [];
   const i = me.wishlist.indexOf(vid);
   if(i>-1) me.wishlist.splice(i,1); else me.wishlist.push(vid);
   save(); render();
 }
 function wishGrid(me, note){
-  return `<div class="trend-grid">${VENUES.map(v=>`
+  return `<div class="trend-grid">${allVenues().map(v=>`
     <div class="trend-card" style="cursor:default">
-      <div class="tc-img"><img src="${v.photo}" alt="${esc(v.name)}" loading="lazy" onerror="this.remove()">
+      <div class="tc-img">${v.photo?`<img src="${v.photo}" alt="${esc(v.name)}" loading="lazy" onerror="this.remove()">`:""}
         <button class="wish-btn ${(me.wishlist||[]).includes(v.id)?"on":""}" onclick="wishToggle('${v.id}')" aria-label="Want to go">${I.heartF.replace('class="icon"','class="icon sm"')}</button>
         <div class="tc-tags">${venueTag1(v)}</div></div>
-      <div class="tc-bd"><b>${esc(v.name)}</b><span class="small" style="font-size:11.5px">${esc((v.addr.split(",")[1]||"").trim())}</span></div>
+      <div class="tc-bd"><b>${esc(v.name)}</b><span class="small" style="font-size:11.5px">${esc((v.addr.split(",")[1]||"").trim())}</span>
+        ${(me.wishlist||[]).includes(v.id) ? `<div class="when-row">${[["weeknights","Weeknights"],["weekends","Weekends"],["any","Anytime"]].map(([k,l])=>`<button type="button" class="pill tiny ${whenOf(me,v.id)===k?"on":""}" onclick="wishWhenSet('${v.id}','${k}')">${l}</button>`).join("")}</div>` : ``}
+      </div>
     </div>`).join("")}</div>
   <div class="hint" style="margin-top:10px">${note}</div>`;
 }
@@ -1483,14 +1516,14 @@ function inviteSend(womanId){
   const amt = PRICING.hold;
   if(errs.length){ if($("inv-err")) $("inv-err").innerHTML = errs.map(e=>`<div class="err-msg">${e}</div>`).join(""); return; }
   DB.invites.push({id:"i"+(DB.invites.length+1), manId:me.id, womanId, venueId:vid, amount:amt, fee:calcFee(amt),
-    msg:($("inv-msg")?$("inv-msg").value.trim():""), windows:[mkWin(3,1), mkWin(5,2), mkWin(9,2)], status:"pending", at:new Date().toISOString()});
+    msg:($("inv-msg")?$("inv-msg").value.trim():""), windows:proposeWins(w, vid), status:"pending", at:new Date().toISOString()});
   save(); inviteFor = null;
   toast("Invitation sent — table on hold"); render();
 }
 function acceptWinPick(iid, wid){ acceptWinSel[iid] = wid; render(); }
 function inviteAccept(iid){
   const i = DB.invites.find(x=>x.id===iid); if(!i || i.status!=="pending") return;
-  const v = VENUES.find(x=>x.id===i.venueId);
+  const v = vById(i.venueId);
   const w = i.windows.find(x=>x.id===acceptWinSel[iid]) || i.windows[0];
   const d = new Date(w.start); if(w.flex) d.setHours(19,30,0,0);
   const post = {id:"p"+(DB.posts.length+1), womanId:i.womanId, venue:JSON.parse(JSON.stringify(v)), idea:"An evening at "+v.name+" — his invitation, her yes.", min:i.amount, max:i.amount, windows:i.windows, picks:i.windows.map(x=>x.id), status:"matched", fundedBy:i.manId, amount:i.amount, fee:i.fee, created:i.at};
@@ -1522,14 +1555,14 @@ function upcomingHTML(me){
 function womanInviteView(me){
   const pend = DB.invites.filter(i=>i.womanId===me.id && i.status==="pending");
   const invCards = pend.map(i=>{
-    const man = user(i.manId), v = VENUES.find(x=>x.id===i.venueId);
+    const man = user(i.manId), v = vById(i.venueId);
     const sel = acceptWinSel[i.id] || i.windows[0].id;
     return `<div class="card" style="margin-top:16px;text-align:left">
       <div style="display:flex;gap:14px;align-items:center;cursor:pointer" onclick="showProfile('${man.id}')">${avatar(man,56)}<div><b style="font-size:1.05rem">${esc(man.name)}, ${man.age}</b>${vBadges(man)}<span class="small" style="display:block;color:var(--terracotta);font-weight:500;margin-top:2px">View profile & photos ${I.chev}</span></div></div>
       <p class="sub" style="margin:12px 0;font-size:15px">"${esc(i.msg || ("Saw "+v.name+" is on your list too — would you like to join me?"))}"</p>
       ${venueBanner(v, 130)}
       <p class="small" style="margin:2px 0 10px;display:flex;gap:6px;align-items:center">${I.shield.replace('class="icon"','class="icon sm" style="color:var(--success)"')} He's committed to the night — dinner's on him.</p>
-      <dt style="font:500 11px 'Courier Prime';letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin:14px 0 6px">Pick the evening</dt>
+      <dt style="font:500 11px 'Courier Prime';letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin:14px 0 6px">Pick the evening${whenOf(me,i.venueId)!=="any"?` — matched to your ${whenOf(me,i.venueId)}`:""}</dt>
       ${i.windows.map(w=>`<div class="win-pick pick-r ${sel===w.id?"on":""}" onclick="acceptWinPick('${i.id}','${w.id}')"><span class="box"></span><div style="flex:1"><div style="font-weight:500;font-size:14px">${wDay(w)}</div><div class="small">${wTime(w)}</div></div></div>`).join("")}
       <div style="display:flex;gap:10px;margin-top:16px">
         <button class="btn btn-primary" style="flex:1" onclick="inviteAccept('${i.id}')">${I.heartF} I'd love to go</button>
@@ -1547,7 +1580,7 @@ function womanInviteView(me){
   ${pend.length ? invCards : `<div class="empty" style="margin-top:16px"><h3>No invitations yet</h3>Heart more places below — invitations can only come from your list.</div>`}
   ${upcomingHTML(me)}
   <h2 style="font-size:1.5rem;margin:34px 0 4px;font-family:'Fraunces',Georgia,serif">Where do you want to go?</h2>
-  <p class="sub" style="margin-bottom:14px">Trending in New York — heart the places you would say yes to.</p>
+  <p class="sub" style="margin-bottom:14px">Heart the places you would say yes to — and tell us when you would go. Invitations arrive matching your nights.</p>
   ${wishGrid(me, "Your list is private. Men only see a place if it is on both of your lists.")}
 </div>`;
 }
@@ -1561,8 +1594,8 @@ function browseInviteView(me){
     return `<div class="date-card">
       ${photoBlock(w)}
       <div class="bd">
-        <div class="vtags-row" style="margin-bottom:4px">${ov.map(vid=>{const v=VENUES.find(x=>x.id===vid);return `<span class="vtag mine">${I.heartF.replace('class="icon"','class="icon sm" style="width:11px;height:11px;vertical-align:-1px"')} ${esc(v.name)}</span>`;}).join("")}</div>
-        <p class="small" style="margin-bottom:6px">${ov.length} place${ov.length!==1?"s":""} you both want to try</p>
+        <div class="vtags-row" style="margin-bottom:4px">${ov.map(vid=>{const v=vById(vid);return `<span class="vtag mine">${I.heartF.replace('class="icon"','class="icon sm" style="width:11px;height:11px;vertical-align:-1px"')} ${esc(v.name)}${whenOf(w,vid)!=="any"?` · ${whenOf(w,vid)}`:""}</span>`;}).join("")}</div>
+        <p class="small" style="margin-bottom:6px">${ov.length} place${ov.length!==1?"s":""} you both want to try — invitations propose ${ov.some(x=>whenOf(w,x)!=="any")?"her nights":"evenings"} automatically</p>
         <p class="small">${esc(w.bio.slice(0,80))}…</p>
         <div class="foot">
           <span class="small" style="cursor:pointer;color:var(--terracotta);font-weight:500" onclick="showProfile('${w.id}')">${esc(w.name.split(" ")[0])}, ${w.age} — profile ${I.chev.replace('class="icon"','class="icon sm" style="width:12px;height:12px;vertical-align:-2px"')}</span>
@@ -1573,7 +1606,7 @@ function browseInviteView(me){
         ${inviteFor===w.id ? `
         <div style="border-top:1px dashed var(--border-strong);margin-top:12px;padding-top:12px">
           <label class="f" style="margin-top:0">Where — from your shared list</label>
-          <select id="inv-venue" class="input">${ov.map(vid=>{const v=VENUES.find(x=>x.id===vid);return `<option value="${vid}">${esc(v.name)}</option>`;}).join("")}</select>
+          <select id="inv-venue" class="input">${ov.map(vid=>{const v=vById(vid);return `<option value="${vid}">${esc(v.name)}</option>`;}).join("")}</select>
           <div class="notice" style="margin-top:14px">${I.shield.replace('class="icon"','class="icon sm" style="color:var(--success);margin-top:2px"')} <span><b>Show-up hold: $${PRICING.hold}</b> — held on your card, never charged if the night happens. Cancel free up to 24h before. You pay dinner at the table like always; WannaGo never touches the meal.${pricingMode()==="take"?` A ${fmt(calcFee(PRICING.hold))} service fee (12% of the hold) applies when she accepts.`:""}</span></div>
           <label class="f">A line with it <span style="color:var(--muted);font-weight:400">— optional</span></label>
           <input id="inv-msg" class="input" placeholder="Saw this is on your list too — join me?">
@@ -1692,7 +1725,7 @@ P.admin = () => {
     ${DB.users.filter(u=>u.role!=="admin").map(u=>`<tr><td style="display:flex;gap:10px;align-items:center">${avatar(u,32)} ${esc(u.name)}</td>
     <td><span class="badge ${u.role==="curator"?"b-pink":"b-purple"}">${u.role==="curator"?"list-maker":"inviter"}</span></td><td>${u.age}</td><td class="mono" style="font-size:13px">${esc(u.email)}</td><td>${u.photos}</td></tr>`).join("")}</table>`;
   if(adminTab==="invitations") table = DB.invites.length ? `<table class="data"><tr><th>From</th><th>To</th><th>Venue</th><th>Hold</th><th>Status</th></tr>
-    ${DB.invites.map(i=>{const v=VENUES.find(x=>x.id===i.venueId);return `<tr><td>${esc(user(i.manId).name)}</td><td>${esc(user(i.womanId).name)}</td><td>${esc(v?v.name:"—")}</td><td class="money">${fmt(i.amount)}</td><td>${i.status==="pending"?'<span class="badge b-info">Pending</span>':i.status==="accepted"?'<span class="badge b-gold">Accepted</span>':'<span class="badge b-warning">Passed</span>'}</td></tr>`}).join("")}</table>` : `<div class="empty"><h3>No invitations yet</h3>Send one as daniel@demo to see the funnel.</div>`;
+    ${DB.invites.map(i=>{const v=vById(i.venueId);return `<tr><td>${esc(user(i.manId).name)}</td><td>${esc(user(i.womanId).name)}</td><td>${esc(v?v.name:"—")}</td><td class="money">${fmt(i.amount)}</td><td>${i.status==="pending"?'<span class="badge b-info">Pending</span>':i.status==="accepted"?'<span class="badge b-gold">Accepted</span>':'<span class="badge b-warning">Passed</span>'}</td></tr>`}).join("")}</table>` : `<div class="empty"><h3>No invitations yet</h3>Send one as daniel@demo to see the funnel.</div>`;
   if(adminTab==="posts") table = `<table class="data"><tr><th>Venue</th><th>Her</th><th>Amount</th><th>Status</th><th>Him</th></tr>
     ${DB.posts.map(p=>`<tr><td>${esc(p.venue.name)}</td><td>${esc(user(p.womanId).name)}</td><td class="money">${p.min===p.max?fmt(p.amount):fmt(p.min)+"–"+fmt(p.max)}</td>
     <td>${p.status==="open"?'<span class="badge b-info">Open</span>':p.status==="funded"?'<span class="badge b-warning">Pending yes</span>':'<span class="badge b-gold">Matched</span>'}</td>
