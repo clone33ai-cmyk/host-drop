@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>WannaGo — Interactive Preview</title>
+<title>WannaGo — Stop swiping. Start tasting.</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='8' y1='4' x2='56' y2='62' gradientUnits='userSpaceOnUse'%3E%3Cstop offset='0' stop-color='%23C4623F'/%3E%3Cstop offset='1' stop-color='%23A94F30'/%3E%3C/linearGradient%3E%3C/defs%3E%3Cpath fill-rule='evenodd' fill='url(%23g)' d='M32 4C18.745 4 8 14.745 8 28C8 45 32 62 32 62C32 62 56 45 56 28C56 14.745 45.255 4 32 4ZM22 16h2.2v7.2h1.1V16h2.2v7.2h1.1V16h2.2v9c0 2-1.4 3-2.6 3.2V40c0 1.5-.8 2.2-1.8 2.2c-1 0-1.8-.7-1.8-2.2V28.2c-1.2-.2-2.6-1.2-2.6-3.2ZM38.2 16c2.9 1.3 4.3 5 4.3 9.5c0 2.7-1 4.3-3 5V40c0 1.5-.8 2.2-1.9 2.2c-1.1 0-1.9-.7-1.9-2.2V17.8c0-1.2.8-1.8 2.5-1.8Z'/%3E%3C/svg%3E">
 <script>document.documentElement.classList.add("js")</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -262,7 +262,7 @@ table.data td:first-child{color:var(--text)}
 .stat{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-card);padding:20px 22px}
 .stat .v{font:700 2rem 'Fraunces',Georgia,serif}
 .stat .l{font-size:13px;color:var(--muted);margin-top:2px}
-.tabs{display:flex;gap:8px;border-bottom:1px solid var(--border);margin-bottom:20px}
+.tabs{display:flex;gap:8px;border-bottom:1px solid var(--border);margin-bottom:20px;flex-wrap:wrap}
 .tab{background:none;border:0;color:var(--muted);font:500 15px 'Inter';padding:12px 16px;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px}
 .tab.on{color:var(--text);border-bottom-color:var(--pink)}
 
@@ -465,11 +465,66 @@ table.data td:first-child{color:var(--text)}
 .show-ph .scrim{position:absolute;inset:0;background:linear-gradient(180deg,transparent 48%,rgba(32,25,18,.86))}
 .show-who{position:absolute;left:18px;bottom:14px;color:#fff;font:700 1.55rem 'Fraunces',Georgia,serif}
 .show-sub{display:block;font:400 12.5px 'Inter',sans-serif;color:rgba(255,255,255,.82);margin-top:3px}
+.show-sec{max-width:1040px;margin:74px auto 0;padding:0 24px}
+.show-feed{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:22px}
+.show-card{display:flex;flex-direction:column}
+.show-card .bd{display:flex;flex-direction:column;flex:1;padding:18px 18px 20px}
+.show-cta{margin-top:auto}
+.show-ph img{object-position:center 18%}
+.pick-bar{position:fixed;left:50%;transform:translateX(-50%);bottom:14px;z-index:150;background:#2A2118;color:#fff;border-radius:999px;padding:9px 10px 9px 16px;display:flex;align-items:center;gap:12px;box-shadow:0 14px 40px rgba(32,25,18,.4);max-width:calc(100vw - 24px)}
+.pick-bar b{color:#E9C46A}
+.pick-bar .face-stack .avatar{filter:blur(1.6px);border:2px solid #2A2118}
+@media(max-width:640px){.pick-bar{width:calc(100vw - 20px);justify-content:space-between;bottom:10px;gap:8px;padding:8px 8px 8px 13px}.pick-bar .face-stack{display:none}}
 .tc-img{background:linear-gradient(135deg,#d9c9b8,#b9a58f)}
 .tr-noimg{display:inline-flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#d9c9b8,#b9a58f);color:#fff}
 .when-row{display:flex;gap:4px;margin-top:7px;flex-wrap:wrap}
 .pill.tiny{height:24px;padding:0 9px;font-size:10.5px;border-radius:999px}
 @media(max-width:720px){.show-ph{height:340px}}
+#nav a{white-space:nowrap}
+.vs-card{position:relative}
+/* ═══ mobile-first pass ═══ */
+@media(max-width:640px){
+  #nav{gap:10px;padding:10px 14px}
+  #nav .brand{font-size:1.1rem;gap:7px}
+  #nav .brand svg{width:27px;height:27px}
+  #nav .nav-link{font-size:13.5px}
+  #nav .btn{padding:9px 13px;font-size:12.5px}
+  .page-head{padding-left:18px;padding-right:18px}
+  .page-head h1{font-size:1.95rem!important}
+  .ns-hero{padding-left:18px;padding-right:18px}
+  .ns-hero h1{font-size:2.3rem}
+  .trend-grid{grid-template-columns:1fr}
+  .tc-img{height:210px}
+  .vs-grid{display:flex;grid-template-columns:none;overflow-x:auto;scroll-snap-type:x mandatory;gap:12px;padding:4px 18px 16px;margin:0 -18px;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+  .vs-grid::-webkit-scrollbar{display:none}
+  .vs-card{flex:0 0 82%;scroll-snap-align:center;height:300px}
+  .show-feed{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;gap:14px;padding:4px 18px 16px;margin:0 -18px;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+  .show-feed::-webkit-scrollbar{display:none}
+  .show-card{flex:0 0 88%;scroll-snap-align:center}
+  .show-sec{margin:44px auto 0;padding:0 18px}
+  .venue-strip{margin-top:40px!important}
+  .feed{grid-template-columns:1fr}
+  .grid-2{grid-template-columns:1fr}
+  .legal-card{max-height:92vh}
+  table.data{display:block;overflow-x:auto}
+  .preview-bar{font-size:11px;line-height:1.5}
+  .trend-row{gap:10px;padding:10px 12px}
+  .tr-rank{width:26px;font-size:15px}
+  .tr-img{width:48px;height:48px}
+  .role-cards{grid-template-columns:1fr;gap:14px}
+  .role-card{padding:22px}
+  .photo{height:300px}
+  .profile-card .photo{height:300px}
+  .prof-actions{flex-wrap:wrap}
+  .prof-actions .btn:first-child{flex:1 1 100%}
+  .legal-overlay{padding:10px}
+  .legal-body{padding:16px 16px 20px}
+  .ticket{margin-left:auto;margin-right:auto}
+  .win-pick{padding:10px 12px}
+  .stat{padding:14px 16px}
+  .stat .v{font-size:1.4rem}
+  .container{padding-left:16px;padding-right:16px}
+}
 .pf-th.on{border-color:var(--terracotta)}
 .vtag.partner{background:var(--sage-soft);color:#465545;border-color:rgba(138,154,126,.55)}
 .checkin{border-top:1px dashed var(--border-strong);margin-top:18px;padding-top:14px;text-align:left}
@@ -490,7 +545,7 @@ table.data td:first-child{color:var(--text)}
     <a class="brand" href="landing.html"><svg width="34" height="34" viewBox="0 0 64 64"><defs><linearGradient id="ng" x1="8" y1="4" x2="56" y2="62" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#C4623F"></stop><stop offset="1" stop-color="#A94F30"></stop></linearGradient></defs><path fill-rule="evenodd" fill="url(#ng)" d="M32 4C18.745 4 8 14.745 8 28C8 45 32 62 32 62C32 62 56 45 56 28C56 14.745 45.255 4 32 4ZM22 16h2.2v7.2h1.1V16h2.2v7.2h1.1V16h2.2v9c0 2-1.4 3-2.6 3.2V40c0 1.5-.8 2.2-1.8 2.2c-1 0-1.8-.7-1.8-2.2V28.2c-1.2-.2-2.6-1.2-2.6-3.2ZM38.2 16c2.9 1.3 4.3 5 4.3 9.5c0 2.7-1 4.3-3 5V40c0 1.5-.8 2.2-1.9 2.2c-1.1 0-1.9-.7-1.9-2.2V17.8c0-1.2.8-1.8 2.5-1.8Z"></path></svg>Wanna<span class="g">Go</span></a>
     <div class="spacer"></div><a class="nav-link" href="login.html">Log in</a><a class="btn btn-primary btn-sm" href="register.html">Join WannaGo</a></div></nav>
 <main id="app">
-<section class="ns-hero"><span class="ns-kicker">WannaGo</span><h1>Every table you've been<br><em>meaning to try.</em></h1><p class="sub">Loading the preview…</p></section>
+<section class="ns-hero"><span class="ns-kicker">WannaGo</span><h1>Stop swiping.<br><em>Start tasting.</em></h1><p class="sub">Loading the preview…</p></section>
 </main>
 <script>
 /* ═══════════ MOCK DATA (backend replaces this) ═══════════ */
@@ -527,6 +582,18 @@ const wWhen = iso => new Date(iso).toLocaleString("en-US",{weekday:"short",month
 
 /* ═══════════ VENUE HIGHLIGHTS + TRUST BADGES ═══════════ */
 const allVenues = () => VENUES.concat(DB.customVenues || []);
+function guestPickBar(){
+  const n = (DB.guestList||[]).length;
+  if(DB.session || !n) return "";
+  const wanting = DB.users.filter(u => u.role!=="admin" && (u.wishlist||[]).some(v => DB.guestList.includes(v)));
+  const ready = n >= 3;
+  return `<div class="pick-bar">
+    ${ready && wanting.length ? `<span class="face-stack" style="margin-right:0">${wanting.slice(0,4).map(u=>avatar(u,30)).join("")}</span>` : I.heartF.replace('class="icon"','class="icon sm" style="color:var(--pink)"')}
+    <span style="font-size:13.5px;line-height:1.35"><b>${n}</b> on your list${ready ? ` · <b>${wanting.length}</b> ${wanting.length===1?"person wants":"people want"} these tables` : ` — pick ${3-n} more`}</span>
+    ${ready ? `<a class="btn btn-primary btn-sm" href="register.html">See who else wants in ${I.chev}</a>`
+            : `<button class="btn btn-sm" style="border:1px solid rgba(255,255,255,.35);background:transparent;color:#fff;white-space:nowrap" onclick="const el=document.getElementById('pick'); if(el) el.scrollIntoView({behavior:'smooth'})">Keep picking</button>`}
+  </div>`;
+}
 function wishWhenSet(vid, val){ const me = user(DB.session); if(!me) return; me.wishWhen = me.wishWhen || {}; me.wishWhen[vid] = val; save(); render(); }
 const whenOf = (u, vid) => (u && u.wishWhen && u.wishWhen[vid]) || "any";
 function proposeWins(her, vid){
@@ -834,6 +901,7 @@ const P = {};
 P.landing = () => {
   const sofia = user("u1"), daniel = user("u4");
   const sess = DB.session ? user(DB.session) : null;
+  const myL = sess ? (sess.wishlist||[]) : (DB.guestList||[]);
   const ctaHref = !sess ? "trending.html" : sess.role==="curator" ? "woman-dashboard.html" : sess.role==="funder" ? "man-browse.html" : "admin.html";
   const ctaLabel = !sess ? "Start my list — free" : sess.role==="curator" ? "Open my invitations" : sess.role==="funder" ? "Find a table" : "Open the admin panel";
   const bokeh = [[8,18,26],[78,10,34],[62,32,18],[16,64,30],[88,58,22],[38,8,14],[70,80,26],[26,84,20]]
@@ -848,22 +916,22 @@ P.landing = () => {
 <section class="ns-hero has-photo">
   <div class="hero-bg" aria-hidden="true"><img src="${UNS("photo-1555396273-367ea4eb4db5")}" alt="" onerror="this.parentNode.remove()"></div>
   <div class="bokeh" aria-hidden="true">${bokeh}</div>
-  <h1>Every table you've been<br><em>meaning to try.</em></h1>
-  <p class="sub">Start adding the restaurants you've been meaning to try — we'll find you someone who wants the same table. She lists. He invites. Both show up.</p>
-  <a class="btn btn-primary btn-lg" href="${ctaHref}">${ctaLabel}</a>
+  <h1>Stop swiping.<br><em>Start tasting.</em></h1>
+  <p class="sub">Add restaurants you've been dying to try. We match you with someone who wants the same table.</p>
+  ${!sess ? `<a class="btn btn-primary btn-lg" style="cursor:pointer" onclick="const el=document.getElementById('pick'); if(el) el.scrollIntoView({behavior:'smooth'})">Start picking — free</a>` : `<a class="btn btn-primary btn-lg" href="${ctaHref}">${ctaLabel}</a>`}
 </section>
 
-<section class="venue-strip reveal" style="margin-top:56px">
-  <div class="vs-head"><span class="ns-kicker">Trending on WannaGo</span><h2>This week's <em>most-wanted</em> tables</h2></div>
+<section class="venue-strip reveal" id="pick" style="margin-top:56px">
+  <div class="vs-head"><span class="ns-kicker">Pick your cravings — no account needed</span><h2>Which tables are <em>you</em> dying to try?</h2><p class="sub" style="margin-top:8px">Tap the heart on 3 or more. Your matches are waiting on the other side.</p></div>
   <div class="vs-grid">
-    ${[0,1,3,5].map(i=>`<figure class="vs-card"><img src="${VENUES[i].photo}" alt="${esc(VENUES[i].name)}" loading="lazy" onerror="if(!this.dataset.f){this.dataset.f=1;this.src='https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=1000&q=70'}else{this.closest('figure').remove()}"><figcaption><span class="vtags-row" style="margin-bottom:4px">${venueTag1(VENUES[i])}</span><b>${esc(VENUES[i].name)}</b><span>${esc(VENUES[i].addr.split(",")[1]||"New York")}</span></figcaption></figure>`).join("")}
+    ${[0,1,3,5].map(i=>{const v=VENUES[i];return `<figure class="vs-card"><img src="${v.photo}" alt="${esc(v.name)}" loading="lazy" onerror="if(!this.dataset.f){this.dataset.f=1;this.src='https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=1000&q=70'}else{this.closest('figure').remove()}"><button class="wish-btn ${myL.includes(v.id)?"on":""}" onclick="wishToggle('${v.id}')" aria-label="Want to go">${I.heartF.replace('class="icon"','class="icon sm"')}</button><figcaption><span class="vtags-row" style="margin-bottom:4px">${venueTag1(v)}</span><b>${esc(v.name)}</b><span>${esc(v.addr.split(",")[1]||"New York")}</span></figcaption></figure>`;}).join("")}
   </div>
   <div style="text-align:center;margin-top:20px"><a class="btn btn-ghost" href="trending.html">See the full trending list ${I.chev}</a></div>
 </section>
 
-<section class="reveal" style="max-width:1040px;margin:74px auto 0;padding:0 24px">
+<section class="reveal show-sec">
   <div class="vs-head" style="margin-bottom:22px"><span class="ns-kicker">What's waiting inside</span><h2>Her list. <em>His commitment.</em></h2></div>
-  <div class="feed" style="grid-template-columns:repeat(auto-fit,minmax(300px,1fr));text-align:left">
+  <div class="show-feed" style="text-align:left">
     <div class="show-card">
       <div class="show-ph">
         <img src="${UNS("photo-1494790108377-be9c29b29330")}" alt="Sofia" loading="lazy" onerror="if(!this.dataset.f){this.dataset.f=1;this.src='https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=900&q=75'}else{this.remove()}">
@@ -873,8 +941,8 @@ P.landing = () => {
       <div class="bd">
         <span class="eyebrow" style="font-size:10px">Sofia's list — where she wants to go</span>
         <div style="margin-top:10px">${wlRow(VENUES[0],true,214)}${wlRow(VENUES[1],true,187)}${wlRow(VENUES[3],true,168)}</div>
-        <p class="small" style="margin-top:10px">Her list is private. Invitations can only come from it — and she picks the evening.</p>
-        <a class="btn btn-primary btn-block" style="margin-top:12px" href="register.html">Build your list ${I.chev}</a>
+        <p class="small" style="margin:10px 0 14px">Her list is private. Invitations can only come from it — and she picks the evening.</p>
+        <a class="btn btn-primary btn-block show-cta" href="register.html">Build your list ${I.chev}</a>
       </div>
     </div>
     <div class="show-card">
@@ -884,10 +952,10 @@ P.landing = () => {
         <div class="show-who">Daniel, 31 <span class="vtick" title="Photo verified">✓</span><span class="show-sub">Photo verified · 3 invitations a week</span></div>
       </div>
       <div class="bd">
-        <span class="eyebrow purple" style="font-size:10px">Daniel is committed to these tables</span>
-        <div class="vtags-row" style="margin:10px 0 6px">${["v1","v4","v6"].map(id=>{const v=vById(id);return `<span class="vtag mine">${I.heartF.replace('class="icon"','class="icon sm" style="width:11px;height:11px;vertical-align:-1px"')} ${esc(v.name)}</span>`;}).join("")}</div>
-        <p class="small">Every invitation carries a real show-up commitment behind it. He asks — you decide. See if you want the same tables.</p>
-        <a class="btn btn-secondary btn-block" style="margin-top:12px" href="register.html">See if you're his match ${I.chev}</a>
+        <span class="eyebrow purple" style="font-size:10px">Daniel's tables — where he'll take you</span>
+        <div style="margin-top:10px">${wlRow(VENUES[0],true,214)}${wlRow(VENUES[3],true,168)}${wlRow(VENUES[5],true,153)}</div>
+        <p class="small" style="margin:10px 0 14px">Every invitation carries a real show-up commitment. He asks — you decide.</p>
+        <a class="btn btn-secondary btn-block show-cta" href="register.html">See if you're his match ${I.chev}</a>
       </div>
     </div>
   </div>
@@ -918,7 +986,8 @@ P.landing = () => {
 <footer class="lp-foot"><div class="base">
   <span>© 2026 WannaGo, Inc.</span>
   <nav><a onclick="showLegal('safety')">Safety</a><a onclick="showLegal('guidelines')">Guidelines</a><a onclick="showLegal('privacy')">Privacy</a><a onclick="showLegal('terms')">Terms</a></nav>
-</div></footer>`;
+</div></footer>
+${guestPickBar()}`;
 };
 P.trending = () => {
   const me = DB.session ? user(DB.session) : null;
@@ -931,7 +1000,7 @@ P.trending = () => {
   <span class="eyebrow">This week in New York</span>
   <h1 style="font-size:2.4rem;margin:10px 0 6px">The most-wanted <em class="serif" style="font-style:italic">tables</em></h1>
   <p class="sub">Ranked by real lists — how many people want to go. A spot here can't be bought.</p>
-  ${!me && (DB.guestList||[]).length ? `<div class="notice" style="margin-top:16px;text-align:left">${I.heartF.replace('class="icon"','class="icon sm" style="color:var(--pink);margin-top:2px"')} <span><b>${DB.guestList.length} place${DB.guestList.length!==1?"s":""} on your list.</b> Create your account and we'll find you someone who wants the same tables — your list comes with you. <a class="btn btn-primary btn-sm" style="margin-top:8px" href="register.html">Sign up free ${I.chev}</a></span></div>` : ``}
+
   <div style="margin-top:22px;text-align:left">
     ${rows.map((r,i)=>`
     <div class="trend-row">
@@ -951,7 +1020,8 @@ P.trending = () => {
   </div>
   ${!me ? `<div style="text-align:center;margin-top:26px"><a class="btn btn-primary btn-lg" href="register.html">Start your list — free</a></div>`
         : `<p class="hint" style="margin-top:18px;text-align:center">Hearting here updates your list everywhere.</p>`}
-</div>`;
+</div>
+${guestPickBar()}`;
 };
 function initLanding(){
   if (!("IntersectionObserver" in window)) { document.querySelectorAll(".reveal").forEach(el=>el.classList.add("in")); return; }
@@ -1806,7 +1876,7 @@ P.profile = () => {
     <label class="f">Your interests <span style="color:var(--muted);font-weight:400">— shown on your profile</span></label>
     <div class="chips" id="chip-grid">${INTERESTS.map(i=>`<button class="pill ${(me.interests||[]).includes(i)?"on":""}" onclick="this.classList.toggle('on')">${esc(i)}</button>`).join("")}</div>
     <div id="pr-err"></div>
-    <div style="display:flex;gap:12px;margin-top:26px">
+    <div class="prof-actions" style="display:flex;gap:12px;margin-top:26px">
       <button class="btn btn-primary btn-lg" style="flex:1" onclick="saveProfile()">Save changes</button>
       <button class="btn btn-ghost btn-lg" onclick="showProfile('${me.id}')">Preview</button>
       <a class="btn btn-ghost btn-lg" href="${her ? "woman-dashboard.html" : "man-browse.html"}">Cancel</a>
