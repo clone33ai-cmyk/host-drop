@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>WannaGo — Stop swiping. Start tasting.</title>
+<title>WannaGo — Match over the meal you both really want.</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='8' y1='4' x2='56' y2='62' gradientUnits='userSpaceOnUse'%3E%3Cstop offset='0' stop-color='%23C4623F'/%3E%3Cstop offset='1' stop-color='%23A94F30'/%3E%3C/linearGradient%3E%3C/defs%3E%3Cpath fill-rule='evenodd' fill='url(%23g)' d='M32 4C18.745 4 8 14.745 8 28C8 45 32 62 32 62C32 62 56 45 56 28C56 14.745 45.255 4 32 4ZM22 16h2.2v7.2h1.1V16h2.2v7.2h1.1V16h2.2v9c0 2-1.4 3-2.6 3.2V40c0 1.5-.8 2.2-1.8 2.2c-1 0-1.8-.7-1.8-2.2V28.2c-1.2-.2-2.6-1.2-2.6-3.2ZM38.2 16c2.9 1.3 4.3 5 4.3 9.5c0 2.7-1 4.3-3 5V40c0 1.5-.8 2.2-1.9 2.2c-1.1 0-1.9-.7-1.9-2.2V17.8c0-1.2.8-1.8 2.5-1.8Z'/%3E%3C/svg%3E">
 <script>document.documentElement.classList.add("js")</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -473,6 +473,15 @@ table.data td:first-child{color:var(--text)}
 .show-ph img{object-position:center 18%}
 .pick-bar{position:fixed;left:50%;transform:translateX(-50%);bottom:14px;z-index:150;background:#2A2118;color:#fff;border-radius:999px;padding:9px 10px 9px 16px;display:flex;align-items:center;gap:12px;box-shadow:0 14px 40px rgba(32,25,18,.4);max-width:calc(100vw - 24px)}
 .pick-bar b{color:#E9C46A}
+.chat-box{display:flex;flex-direction:column;gap:8px;max-height:260px;overflow-y:auto;padding:4px 2px}
+.chat-msg{display:flex;flex-direction:column;align-items:flex-start;max-width:78%}
+.chat-msg.mine{align-self:flex-end;align-items:flex-end}
+.chat-b{background:var(--bg);border:1px solid var(--border);border-radius:14px 14px 14px 4px;padding:8px 12px;font-size:13.5px;line-height:1.45}
+.chat-msg.mine .chat-b{background:var(--terracotta);color:#fff;border-color:var(--terracotta);border-radius:14px 14px 4px 14px}
+.chat-t{font-size:10.5px;color:var(--muted);margin-top:3px}
+.priv-list{margin:8px 0 12px;padding:0;list-style:none}
+.priv-list li{position:relative;padding-left:20px;font-size:12.5px;line-height:1.5;color:var(--text-2);margin:4px 0}
+.priv-list li::before{content:"✓";position:absolute;left:0;color:var(--success);font-weight:700}
 .pick-bar .face-stack .avatar{filter:blur(1.6px);border:2px solid #2A2118}
 @media(max-width:640px){.pick-bar{width:calc(100vw - 20px);justify-content:space-between;bottom:10px;gap:8px;padding:8px 8px 8px 13px}.pick-bar .face-stack{display:none}}
 .tc-img{background:linear-gradient(135deg,#d9c9b8,#b9a58f)}
@@ -545,11 +554,12 @@ table.data td:first-child{color:var(--text)}
     <a class="brand" href="landing.html"><svg width="34" height="34" viewBox="0 0 64 64"><defs><linearGradient id="ng" x1="8" y1="4" x2="56" y2="62" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#C4623F"></stop><stop offset="1" stop-color="#A94F30"></stop></linearGradient></defs><path fill-rule="evenodd" fill="url(#ng)" d="M32 4C18.745 4 8 14.745 8 28C8 45 32 62 32 62C32 62 56 45 56 28C56 14.745 45.255 4 32 4ZM22 16h2.2v7.2h1.1V16h2.2v7.2h1.1V16h2.2v9c0 2-1.4 3-2.6 3.2V40c0 1.5-.8 2.2-1.8 2.2c-1 0-1.8-.7-1.8-2.2V28.2c-1.2-.2-2.6-1.2-2.6-3.2ZM38.2 16c2.9 1.3 4.3 5 4.3 9.5c0 2.7-1 4.3-3 5V40c0 1.5-.8 2.2-1.9 2.2c-1.1 0-1.9-.7-1.9-2.2V17.8c0-1.2.8-1.8 2.5-1.8Z"></path></svg>Wanna<span class="g">Go</span></a>
     <div class="spacer"></div><a class="nav-link" href="login.html">Log in</a><a class="btn btn-primary btn-sm" href="register.html">Join WannaGo</a></div></nav>
 <main id="app">
-<section class="ns-hero"><span class="ns-kicker">WannaGo</span><h1>Stop swiping.<br><em>Start tasting.</em></h1><p class="sub">Loading the preview…</p></section>
+<section class="ns-hero"><span class="ns-kicker">WannaGo</span><h1>Match with someone over a meal<br><em>you both really want.</em></h1><p class="sub">Loading the preview…</p></section>
 </main>
 <script>
 /* ═══════════ MOCK DATA (backend replaces this) ═══════════ */
 const INTERESTS = ["Travel","Live music","Fitness","Fine dining","Art & museums","Film","Reading","Cooking","Football","Photography","Board games","Dancing"];
+const DIETS = ["Vegetarian","Vegan","Pescatarian","Halal","Kosher","Gluten-free","Nut allergy","Shellfish allergy"];
 
 const UNS = id => `https://images.unsplash.com/${id}?auto=format&fit=crop&w=1000&q=70`;
 const VENUES = [ // stands in for Google Places Autocomplete responses
@@ -582,6 +592,36 @@ const wWhen = iso => new Date(iso).toLocaleString("en-US",{weekday:"short",month
 
 /* ═══════════ VENUE HIGHLIGHTS + TRUST BADGES ═══════════ */
 const allVenues = () => VENUES.concat(DB.customVenues || []);
+function sendChat(mid){
+  const me = user(DB.session); if(!me) return;
+  const m = DB.matches.find(x=>x.id===mid); if(!m || (m.womanId!==me.id && m.manId!==me.id)) return;
+  const el = $("chat-in"); const text = (el ? el.value : "").trim().slice(0, 280);
+  if(!text) return;
+  m.chat = m.chat || [];
+  m.chat.push({from: me.id, text, at: new Date().toISOString()});
+  save(); render();
+}
+function chatHTML(m, me){
+  const msgs = m.chat || [];
+  const isMine = f => me && f === me.id;
+  return `<div class="card" style="margin-top:20px;text-align:left">
+    <span class="eyebrow" style="font-size:10px">Coordinate the night</span>
+    <ul class="priv-list">
+      <li>Your number is never given out — not to your date, not to anyone</li>
+      <li>Everything runs right here until you decide otherwise</li>
+      <li>Sharing your number is always your call, never a requirement</li>
+      <li>Reminders and check-ins come from WannaGo, never from their phone</li>
+    </ul>
+    <div class="chat-box">${msgs.length ? msgs.map(c=>`<div class="chat-msg ${isMine(c.from)?"mine":""}"><span class="chat-b">${esc(c.text)}</span><span class="chat-t">${esc(user(c.from).name.split(" ")[0])} · ${new Date(c.at).toLocaleTimeString("en-US",{hour:"numeric",minute:"2-digit"})}</span></div>`).join("")
+      : `<p class="small" style="text-align:center;padding:14px 0;color:var(--muted)">Say hi — you already have plans. "Running late", "I'm in the red dress", "they're holding our table."</p>`}</div>
+    ${me && (m.womanId===me.id || m.manId===me.id) ? `<div style="display:flex;gap:8px;margin-top:12px"><input id="chat-in" class="input" style="margin:0" placeholder="Message ${esc(user(m.womanId===me.id?m.manId:m.womanId).name.split(" ")[0])}…" maxlength="280" onkeydown="if(event.key==='Enter')sendChat('${m.id}')"><button class="btn btn-primary" onclick="sendChat('${m.id}')">${I.send}</button></div>`:``}
+  </div>`;
+}
+function logEmail(toId, subject, preview, kind){
+  DB.emails = DB.emails || [];
+  DB.emails.unshift({id:"e"+(DB.emails.length+1), toId, subject, preview, kind:kind||"transactional", at:new Date().toISOString()});
+  if(DB.emails.length > 40) DB.emails.length = 40;
+}
 function guestPickBar(){
   const n = (DB.guestList||[]).length;
   if(DB.session || !n) return "";
@@ -709,6 +749,8 @@ const SEED = {
 };
 SEED.users[0].wishlist = ["v1","v2","v4"];
 SEED.users[0].wishWhen = {v1:"weekends", v2:"weeknights"};
+SEED.users[0].diet = ["Vegetarian"];
+SEED.users[1].diet = ["Gluten-free"];
 SEED.users[1].wishlist = ["v2","v5"];
 SEED.users[2].wishlist = ["v1","v6"];
 SEED.users[3].wishlist = ["v1","v4","v6"];
@@ -743,6 +785,9 @@ try { DB = JSON.parse(localStorage.getItem("wannago-db-2")) || seed(); } catch(e
   if(!DB.mech) DB.mech = "invite";
   if(!DB.guestList) DB.guestList = [];
   if(!DB.customVenues) DB.customVenues = [];
+  if(!DB.emails) DB.emails = [];
+  DB.matches.forEach(m=>{ if(!m.chat) m.chat = []; });
+  DB.users.forEach(u=>{ if(u.role!=="admin" && !u.diet){ const su=SEED.users.find(x=>x.id===u.id); u.diet = (su&&su.diet) ? su.diet.slice() : []; } });
   DB.users.forEach(u=>{ if(u.role!=="admin" && !u.wishWhen){ const su=SEED.users.find(x=>x.id===u.id); u.wishWhen = (su&&su.wishWhen) ? JSON.parse(JSON.stringify(su.wishWhen)) : {}; } });
   if(!DB.invites) DB.invites = JSON.parse(JSON.stringify(SEED.invites||[]));
   DB.users.forEach(u=>{ if(u.role!=="admin" && !u.gallery){ const su=SEED.users.find(x=>x.id===u.id); u.gallery = (su&&su.gallery) ? su.gallery.slice() : (u.photo ? [u.photo] : []); u.photos = u.gallery.length || u.photos || 0; } });
@@ -845,7 +890,7 @@ terms: {title:"Terms", body:`
 privacy: {title:"Privacy", body:`
 <h4>What we collect</h4><p>Profile details you provide (name, age, photos, bio, interests), your venue list and activity (invitations, check-ins), approximate city for local results, and device/usage data. Payment cards are collected and stored by Stripe, our payment processor — WannaGo never stores your card number.</p>
 <h4>How we use it</h4><p>To operate the service: showing overlap-based matches, computing trending venues (always as aggregate counts, never revealing your individual list), sending reminders, preventing fraud and abuse, and improving the product.</p>
-<h4>What others see</h4><p>Your profile is visible to members you can match with. Your venue list is private; another member sees only the specific venues that appear on both of your lists, and only after an overlap exists. Check-in status is visible only to your confirmed date.</p>
+<h4>What others see</h4><p>Your profile is visible to members you can match with. Your venue list is private; another member sees only the specific venues that appear on both of your lists, and only after an overlap exists. Check-in status is visible only to your confirmed date. Your phone number is never shown to other members.</p>
 <h4>Who we share with</h4><p>Service providers acting for us: Stripe (payments), our hosting and SMS providers, and Google (venue data, maps). We do not sell personal information. We disclose data if required by law or to protect members' safety.</p>
 <h4>Your choices</h4><p>Edit or delete your profile and list at any time. Account deletion removes your profile and list; records required for payment, safety, or legal purposes are retained as required. Contact privacy@wannago.app for access or deletion requests.</p>
 <h4>Safety-related data</h4><p>No-show reports, blocks, and abuse reports are retained to protect the community even after the reporting account closes.</p>`},
@@ -858,6 +903,7 @@ guidelines: {title:"Guidelines", body:`
 <h4>Report what's wrong</h4><p>Reporting tools are being built into the beta. Until then, contact safety@wannago.app — reports are confidential.</p>`},
 safety: {title:"Safety", body:`
 <h4>Built-in protections</h4><p>Every date happens in a public restaurant — that is the product. Profiles are photo-verified. Invitations require a financial commitment, which filters out people who aren't serious. Both parties confirm attendance.</p>
+<h4>Your phone number stays yours</h4><p>Members never see your number. All coordination happens in the app, reminders come from WannaGo, and sharing your number with a date is always your choice — never a requirement of using the service.</p>
 <h4>Before you go</h4><p>Tell a friend where you're going and who with — the ticket screen is easy to screenshot. Look up the venue. Arrange your own transportation there and back.</p>
 <h4>At the table</h4><p>You owe nobody anything — not affection, not your time past dessert, not a second date. The hold is his commitment to show up, never a claim on you. If anything feels off, leave; staff can help.</p>
 <h4>What verification means — and doesn't</h4><p>Photo verification confirms a profile matches a real person's face. It is not a background check and cannot predict behavior. Trust your instincts over any badge.</p>
@@ -916,8 +962,8 @@ P.landing = () => {
 <section class="ns-hero has-photo">
   <div class="hero-bg" aria-hidden="true"><img src="${UNS("photo-1555396273-367ea4eb4db5")}" alt="" onerror="this.parentNode.remove()"></div>
   <div class="bokeh" aria-hidden="true">${bokeh}</div>
-  <h1>Stop swiping.<br><em>Start tasting.</em></h1>
-  <p class="sub">Add restaurants you've been dying to try. We match you with someone who wants the same table.</p>
+  <h1>Match with someone over a meal<br><em>you both really want.</em></h1>
+  <p class="sub">Add restaurants you've been dying to try. One of you curates the evening and picks up the check — the other just says yes, shows up, and never reaches for a wallet.</p>
   ${!sess ? `<a class="btn btn-primary btn-lg" style="cursor:pointer" onclick="const el=document.getElementById('pick'); if(el) el.scrollIntoView({behavior:'smooth'})">Start picking — free</a>` : `<a class="btn btn-primary btn-lg" href="${ctaHref}">${ctaLabel}</a>`}
 </section>
 
@@ -941,7 +987,7 @@ P.landing = () => {
       <div class="bd">
         <span class="eyebrow" style="font-size:10px">Sofia's list — where she wants to go</span>
         <div style="margin-top:10px">${wlRow(VENUES[0],true,214)}${wlRow(VENUES[1],true,187)}${wlRow(VENUES[3],true,168)}</div>
-        <p class="small" style="margin:10px 0 14px">Her list is private. Invitations can only come from it — and she picks the evening.</p>
+        <p class="small" style="margin:10px 0 14px">Her list is private. Invitations can only come from it — she picks the evening, and the check is never hers.</p>
         <a class="btn btn-primary btn-block show-cta" href="register.html">Build your list ${I.chev}</a>
       </div>
     </div>
@@ -954,7 +1000,7 @@ P.landing = () => {
       <div class="bd">
         <span class="eyebrow purple" style="font-size:10px">Daniel's tables — where he'll take you</span>
         <div style="margin-top:10px">${wlRow(VENUES[0],true,214)}${wlRow(VENUES[3],true,168)}${wlRow(VENUES[5],true,153)}</div>
-        <p class="small" style="margin:10px 0 14px">Every invitation carries a real show-up commitment. He asks — you decide.</p>
+        <p class="small" style="margin:10px 0 14px">He plans it, books it, treats — and commits to showing up. You just say yes.</p>
         <a class="btn btn-secondary btn-block show-cta" href="register.html">See if you're his match ${I.chev}</a>
       </div>
     </div>
@@ -1065,6 +1111,8 @@ function regForm(role){
     </div>
     <label class="f">Email</label><input id="r-email" class="input" type="email" placeholder="you@example.com">
     <label class="f">Password</label><input id="r-pass" class="input" type="password" placeholder="8+ characters">
+    <label class="f">Table notes <span style="color:var(--muted);font-weight:400">— optional, helps pick the right table</span></label>
+    <div class="chips" id="diet-grid">${DIETS.map(d=>`<button type="button" class="pill" onclick="this.classList.toggle('on')">${d}</button>`).join("")}</div>
     <label class="f">Bio</label><textarea id="r-bio" class="input" placeholder="${her?"The short version of you — what a great evening with you looks like.":"The short version of you — why you're worth saying yes to."}"></textarea>
     <label class="f">Photos <span style="color:var(--muted);font-weight:400">— at least 1 required</span></label>
     <input type="file" id="ph-file" accept="image/*" multiple style="display:none" onchange="regAddPhotos(this.files); this.value=''">
@@ -1144,6 +1192,7 @@ function showProfile(uid){
       ${gal.length>1?`<div class="pf-thumbs">${gal.map((p,i)=>`<img class="pf-th ${i===0?"on":""}" src="${p}" alt="" onclick="const m=document.getElementById('pf-main'); if(m) m.src=this.src; this.parentNode.querySelectorAll('.pf-th').forEach(t=>t.classList.remove('on')); this.classList.add('on')">`).join("")}</div>`:""}
       ${vBadges(u)}
       <p style="margin:8px 0 0;font-size:14.5px;line-height:1.6;color:var(--text-2)">${esc(u.bio)}</p>
+      ${(u.diet&&u.diet.length)?`<p class="small" style="margin:10px 0 0;color:var(--success);font-weight:500">Table notes: ${u.diet.map(esc).join(" · ")}</p>`:``}
       ${(u.interests&&u.interests.length)?`<div class="chips" style="margin-top:12px">${u.interests.map(x=>`<span class="pill static" style="height:28px;font-size:12.5px">${esc(x)}</span>`).join("")}</div>`:""}
     </div></div>`;
   d.onclick = e => { if(e.target === d) closeLegal(); };
@@ -1162,7 +1211,7 @@ function register(role){
   const interests = role==="man" ? [...document.querySelectorAll("#chip-grid .pill.on")].map(b=>b.textContent) : undefined;
   if(role==="man" && !interests.length) errs.push("Pick at least one interest.");
   if(errs.length){ $("r-err").innerHTML = errs.map(e=>`<div class="err-msg">${e}</div>`).join(""); return; }
-  const u={id:"u"+(DB.users.length+1), role: role==="woman" ? "curator" : "funder", gender: role==="woman" ? "woman" : "man", seeks: role==="woman" ? "men" : "women", wishlist:(DB.guestList||[]).slice(), name, age, email, bio: bio||"—", photos:uploadedPhotos.length, photo: uploadedPhotos[0]||undefined, gallery: uploadedPhotos.slice(), g:Math.floor(Math.random()*grads.length), interests, verify:{photo:true}, sub:false, trialStart: role==="woman" ? new Date().toISOString() : null};
+  const u={id:"u"+(DB.users.length+1), role: role==="woman" ? "curator" : "funder", gender: role==="woman" ? "woman" : "man", seeks: role==="woman" ? "men" : "women", diet: [...document.querySelectorAll("#diet-grid .pill.on")].map(b=>b.textContent), wishlist:(DB.guestList||[]).slice(), name, age, email, bio: bio||"—", photos:uploadedPhotos.length, photo: uploadedPhotos[0]||undefined, gallery: uploadedPhotos.slice(), g:Math.floor(Math.random()*grads.length), interests, verify:{photo:true}, sub:false, trialStart: role==="woman" ? new Date().toISOString() : null};
   DB.users.push(u); DB.session=u.id; DB.guestList=[]; save(); uploaded=0; uploadedPhotos=[];
   toastNext("Welcome to WannaGo, "+name.split(" ")[0]);
   go(role==="woman" ? "#/woman" : "#/browse");
@@ -1587,6 +1636,8 @@ function inviteSend(womanId){
   if(errs.length){ if($("inv-err")) $("inv-err").innerHTML = errs.map(e=>`<div class="err-msg">${e}</div>`).join(""); return; }
   DB.invites.push({id:"i"+(DB.invites.length+1), manId:me.id, womanId, venueId:vid, amount:amt, fee:calcFee(amt),
     msg:($("inv-msg")?$("inv-msg").value.trim():""), windows:proposeWins(w, vid), status:"pending", at:new Date().toISOString()});
+  const sentInv = DB.invites[DB.invites.length-1];
+  logEmail(womanId, "You have an invitation 💌 — " + (vById(sentInv.venueId)||{}).name, me.name.split(" ")[0] + " wants to take you to " + (vById(sentInv.venueId)||{}).name + ". It's on your list too. 3 evenings proposed — you pick.", "transactional");
   save(); inviteFor = null;
   toast("Invitation sent — table on hold"); render();
 }
@@ -1599,12 +1650,17 @@ function inviteAccept(iid){
   const post = {id:"p"+(DB.posts.length+1), womanId:i.womanId, venue:JSON.parse(JSON.stringify(v)), idea:"An evening at "+v.name+" — his invitation, her yes.", min:i.amount, max:i.amount, windows:i.windows, picks:i.windows.map(x=>x.id), status:"matched", fundedBy:i.manId, amount:i.amount, fee:i.fee, created:i.at};
   DB.posts.push(post);
   const m = {id:"m"+(DB.matches.length+1), postId:post.id, womanId:i.womanId, manId:i.manId, when:d.toISOString(), checkin:{w:false,m:false}, at:new Date().toISOString()};
-  DB.matches.push(m); i.status = "accepted"; save();
+  DB.matches.push(m); i.status = "accepted";
+  logEmail(i.manId, "It's a date 🎉 " + user(i.womanId).name.split(" ")[0] + " said yes", user(i.womanId).name.split(" ")[0] + " picked " + wWhen(m.when) + " at " + v.name + ". Your $" + PRICING.hold + " hold stays until you both check in. Table's on you.", "transactional");
+  logEmail(i.womanId, "It's a date — " + v.name + ", " + wWhen(m.when), "Confirmed with " + user(i.manId).name.split(" ")[0] + ". We'll remind you both 24h and 2h before. Check in when you arrive.", "transactional");
+  save();
   go("#/match/"+m.id);
 }
 function invitePass(iid){
   const i = DB.invites.find(x=>x.id===iid); if(!i) return;
-  i.status = "passed"; save();
+  i.status = "passed";
+  logEmail(i.manId, "Not this time — but your invitation is back", user(i.womanId).name.split(" ")[0] + " passed. No charge, hold released, and this didn't count against your weekly 3.", "transactional");
+  save();
   toast("Passed — he is refunded in full"); render();
 }
 function upcomingHTML(me){
@@ -1665,6 +1721,7 @@ function browseInviteView(me){
       ${photoBlock(w)}
       <div class="bd">
         <div class="vtags-row" style="margin-bottom:4px">${ov.map(vid=>{const v=vById(vid);return `<span class="vtag mine">${I.heartF.replace('class="icon"','class="icon sm" style="width:11px;height:11px;vertical-align:-1px"')} ${esc(v.name)}${whenOf(w,vid)!=="any"?` · ${whenOf(w,vid)}`:""}</span>`;}).join("")}</div>
+        ${(w.diet&&w.diet.length)?`<p class="small" style="margin-bottom:4px;color:var(--success);font-weight:500">Table notes: ${w.diet.map(esc).join(" · ")}</p>`:``}
         <p class="small" style="margin-bottom:6px">${ov.length} place${ov.length!==1?"s":""} you both want to try — invitations propose ${ov.some(x=>whenOf(w,x)!=="any")?"her nights":"evenings"} automatically</p>
         <p class="small">${esc(w.bio.slice(0,80))}…</p>
         <div class="foot">
@@ -1702,6 +1759,13 @@ function ciBadge(m, k, isMe){
   return `<span class="small">Not yet · <button class="btn btn-ghost btn-sm" style="padding:3px 10px;font-size:12px" onclick="checkIn('${m.id}','${k}')">simulate — demo</button></span>`;
 }
 function checkIn(mid, k){
+  (function(){ const m0 = DB.matches.find(x=>x.id===mid); if(m0 && m0.checkin && !(m0.checkin.w && m0.checkin.m)){
+    const other = k === "w" ? "m" : "w";
+    if(m0.checkin[other]){
+      const p0 = DB.posts.find(x=>x.id===m0.postId);
+      logEmail(m0.manId, "Hold released — enjoy the night", "You both checked in at " + (p0?p0.venue.name:"the venue") + ". $" + PRICING.hold + " hold melted, $0 charged. That's the whole promise.", "transactional");
+    }
+  }})();
   const m = DB.matches.find(x=>x.id===mid); if(!m) return;
   m.checkin = m.checkin || {w:false, m:false}; m.checkin[k] = true; save();
   toast("Checked in"); render();
@@ -1766,6 +1830,7 @@ P.match = (matchId) => {
         <div><dt>Matched</dt><dd class="mono" style="font-size:13.5px;color:var(--text-2)">${stamp(m.at)}</dd></div>
         <div><dt>Between</dt><dd>${esc(w.name.split(" ")[0])} &amp; ${esc(man.name.split(" ")[0])}</dd></div>
       </dl>
+      ${(w.diet&&w.diet.length)||(man.diet&&man.diet.length) ? `<p class="small" style="margin-top:14px;text-align:center;color:var(--success);font-weight:500">Table notes: ${[...(w.diet||[]).map(d=>w.name.split(" ")[0]+" — "+d), ...(man.diet||[]).map(d=>man.name.split(" ")[0]+" — "+d)].map(esc).join(" · ")}</p>` : ``}
       <a class="btn btn-primary btn-lg btn-block" style="margin-top:24px" href="${reserveHref}" target="_blank" rel="noopener">${I.cal} ${reserveLabel}${m.when?" · "+new Date(m.when).toLocaleTimeString("en-US",{hour:"numeric",minute:"2-digit"}):""}</a>
       ${gcalHref?`<a class="btn btn-ghost btn-block" style="margin-top:8px" href="${gcalHref}" target="_blank" rel="noopener">${I.cal} Add to Google Calendar</a>`:""}
       <p class="small" style="text-align:center;margin-top:10px">Both of you get reminders 24h and 2h before${prov?" · reservation link is prefilled with your time":""}.</p>
@@ -1777,6 +1842,7 @@ P.match = (matchId) => {
           ? `<div class="ci-done">${I.check} Both checked in — holds released, nobody owes a thing. Enjoy ${esc(p.venue.name)}, and heart your next spot for date two.</div>`
           : `<p class="small" style="margin-top:8px">One tap from the reminder when you arrive. Silence never costs money — the hold only moves if someone reports a no-show and the other side stays silent.</p>`}
       </div>
+  ${chatHTML(m, me)}
     </div>
   </div>
 </div>`;
@@ -1789,13 +1855,15 @@ P.admin = () => {
   const women=DB.users.filter(u=>u.role==="curator").length, men=DB.users.filter(u=>u.role==="funder").length;
   const funded=DB.posts.filter(p=>p.status!=="open");
   const volume=funded.reduce((s,p)=>s+(p.amount||0),0);
-  const tabs = ["users","invitations","posts","matches"];
+  const tabs = ["users","invitations","emails","posts","matches"];
   let table = "";
   if(adminTab==="users") table = `<table class="data"><tr><th>User</th><th>Role</th><th>Age</th><th>Email</th><th>Photos</th></tr>
     ${DB.users.filter(u=>u.role!=="admin").map(u=>`<tr><td style="display:flex;gap:10px;align-items:center">${avatar(u,32)} ${esc(u.name)}</td>
     <td><span class="badge ${u.role==="curator"?"b-pink":"b-purple"}">${u.role==="curator"?"list-maker":"inviter"}</span></td><td>${u.age}</td><td class="mono" style="font-size:13px">${esc(u.email)}</td><td>${u.photos}</td></tr>`).join("")}</table>`;
   if(adminTab==="invitations") table = DB.invites.length ? `<table class="data"><tr><th>From</th><th>To</th><th>Venue</th><th>Hold</th><th>Status</th></tr>
     ${DB.invites.map(i=>{const v=vById(i.venueId);return `<tr><td>${esc(user(i.manId).name)}</td><td>${esc(user(i.womanId).name)}</td><td>${esc(v?v.name:"—")}</td><td class="money">${fmt(i.amount)}</td><td>${i.status==="pending"?'<span class="badge b-info">Pending</span>':i.status==="accepted"?'<span class="badge b-gold">Accepted</span>':'<span class="badge b-warning">Passed</span>'}</td></tr>`}).join("")}</table>` : `<div class="empty"><h3>No invitations yet</h3>Send one as daniel@demo to see the funnel.</div>`;
+  if(adminTab==="emails") table = (DB.emails&&DB.emails.length) ? `<p class="small" style="margin-bottom:12px">Every notification the production system would send — generated live as flows run. Transactional lane: Laravel + Postmark/Twilio. Lifecycle lane: webhooks into GoHighLevel.</p><table class="data"><tr><th>To</th><th>Subject</th><th>Preview</th></tr>
+    ${DB.emails.map(e=>{const u=user(e.toId);return `<tr><td style="white-space:nowrap">${u?esc(u.name.split(" ")[0]):"—"}</td><td style="font-weight:600">${esc(e.subject)}</td><td class="small">${esc(e.preview)}</td></tr>`}).join("")}</table>` : `<div class="empty"><h3>No notifications yet</h3>Send an invitation as daniel@demo and watch the emails generate here.</div>`;
   if(adminTab==="posts") table = `<table class="data"><tr><th>Venue</th><th>Her</th><th>Amount</th><th>Status</th><th>Him</th></tr>
     ${DB.posts.map(p=>`<tr><td>${esc(p.venue.name)}</td><td>${esc(user(p.womanId).name)}</td><td class="money">${p.min===p.max?fmt(p.amount):fmt(p.min)+"–"+fmt(p.max)}</td>
     <td>${p.status==="open"?'<span class="badge b-info">Open</span>':p.status==="funded"?'<span class="badge b-warning">Pending yes</span>':'<span class="badge b-gold">Matched</span>'}</td>
@@ -1873,6 +1941,8 @@ P.profile = () => {
       <div><label class="f">Age</label><input id="pr-age" class="input" type="number" min="18" value="${me.age}"></div>
     </div>
     <label class="f">Bio</label><textarea id="pr-bio" class="input">${esc(me.bio)}</textarea>
+    <label class="f">Table notes <span style="color:var(--muted);font-weight:400">— dietary needs, shown before the table is booked</span></label>
+    <div class="chips" id="diet-grid">${DIETS.map(d=>`<button type="button" class="pill ${(me.diet||[]).includes(d)?"on":""}" onclick="this.classList.toggle('on')">${d}</button>`).join("")}</div>
     <label class="f">Your interests <span style="color:var(--muted);font-weight:400">— shown on your profile</span></label>
     <div class="chips" id="chip-grid">${INTERESTS.map(i=>`<button class="pill ${(me.interests||[]).includes(i)?"on":""}" onclick="this.classList.toggle('on')">${esc(i)}</button>`).join("")}</div>
     <div id="pr-err"></div>
@@ -1893,6 +1963,7 @@ function saveProfile(){
   if(!name) errs.push("Name is required.");
   if(!age || age < 18) errs.push("Age must be 18 or older.");
   const ints = [...document.querySelectorAll("#chip-grid .pill.on")].map(b=>b.textContent);
+  me.diet = [...document.querySelectorAll("#diet-grid .pill.on")].map(b=>b.textContent);
   if(me.role === "funder" && !ints.length) errs.push("Keep at least one interest.");
   else me.interests = ints;
   if(errs.length){ $("pr-err").innerHTML = errs.map(e=>`<div class="err-msg">${e}</div>`).join(""); return; }
